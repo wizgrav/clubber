@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta name="twitter:card" content="player">
+        <meta name="twitter:site" content="@wizgrav">
+        <meta name="twitter:title" content="Clubber demo">
+        <meta name="twitter:description" content="Rhythm analysis for javascript">
+        <meta name="twitter:player" content="https://wizgrav.github.io/clubber/demo/index.html">
+        <meta name="twitter:player:width" content="600">
+        <meta name="twitter:player:height" content="370">
+      
+        <meta charset="utf-8">        
+        <meta name="author" content="Yannis Gravezas <wizgrav@gmail.com>">
+        <meta name="description" content="Rhythm analysis for javascript">
+        
+        <!-- Mobile Stuff -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="msapplication-tap-highlight" content="no">
+        
+        <!-- Chrome on Android -->
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="application-name" content="Clubber demo">
+        <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon.png">
+        
+        <!-- Safari on iOS -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="Clubber demo">
+        <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+        
+        <!-- Windows 8 -->
+        <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon.png">
+        <meta name="msapplication-TileColor" content="#FFFFFF">
+        
+        
+        <meta name="theme-color" content="#000000">
+        
+        <link rel="shortcut icon" href="favicon.ico">
+        
+        <title>Clubber demo</title>
+        <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
+        <style>
+          * {
+            margin:0;
+            padding:0;
+          }
+          body {
+            overflow: hidden;
+          }
+          #header {
+            position:fixed;
+          }
+          audio {
+            position: fixed;
+            display:none;
+          }
+          body, canvas {
+            width: 100vw;
+            height: 100vh;
+          }
+          
+          #header a {
+            text-decoration: none;
+            color: gray;
+            font-family: monospace;
+            font-size: 12px;
+          }
+          
+          #header img {
+            vertical-align: middle;
+          }
+        </style>
+      
+        <script id="fragment" type="fs">
+        // Based on https://www.shadertoy.com/view/XsXXDn
+        precision highp float;
+        varying vec2 vUv;
+        uniform float iGlobalTime;
+        uniform vec2 iResolution;
+        uniform vec4 iMusicLow;
+        uniform vec4 iMusicMid;
+        uniform vec4 iMusicHigh;
+
+        #define t iGlobalTime
+        #define r iResolution.xy
+
+        void mainImage( out vec4 fragColor, in vec2 fragCoord ){
+            vec3 c;
+            float l,z=t;
+            for(int i=0;i<3;i++) {
+                vec2 uv,p=fragCoord.xy/r;
+                uv=p;
+                p-=.5;
+                p.x*=r.x/r.y;
+                z+=.05+.05*iMusicLow[3];
+                l=length(p);
+                uv+=p/l*(sin(z - min(iMusicHigh[0],iMusicHigh[3]))*iMusicMid[1]+1.*mix(iMusicMid[3],0.1,iMusicHigh[3]))*abs(sin(l*mix(8.-iMusicLow[2], 10.-iMusicHigh[2],iMusicMid[3])-z - iMusicLow[3]));
+                c[i]=mix(.01, .02, max(iMusicMid[3],iMusicHigh[3]))/length(abs(mod(uv,mix(0.9,1.1,iMusicHigh[0]))-.5));
+            }
+            fragColor=vec4(c/l,t);
+        }
+
+        void main () {
+          mainImage(gl_FragColor, gl_FragCoord.xy);
+          gl_FragColor.a=1.0;
+        }
+        </script>
+      
+    </head>
+
+    <body>
+        <a href="https://github.com/wizgrav/clubber"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+      
+        <audio id="audio" controls></audio>
+         <div id="header" title="find and enter the id of a soundcloud track to play it.">
+          <a href="https://soundcloud.com/spheradj/djset-psytrance-2016">Psy16 Set by DJ Sphera</a>
+          <input id="tid" type="text" placeholder="enter track id" style="width: 100px;" value="278830901"/> 
+          <button onclick="play()">Play</button>
+          <button onclick="maximize()">Full</button>
+          <img src="soundcloud.png"/>
+         
+        </div>
+        <canvas id="canvas"></canvas>
+        
+        <script src="../clubber.js"></script>
+        <script src="twgl.min.js"></script>
+        <script src="demo.js"></script>
+        <script>
+          audio = document.getElementById("audio");
+          audio.crossOrigin = "anonymous";
+
+          var clubber = new Clubber();
+          clubber.listen(audio);
+          
+          function play (src) {
+            var url = 'http://api.soundcloud.com/tracks/'  + parseInt(document.querySelector("input").value) + '/stream' +
+            '?client_id=56c4f3443da0d6ce6dcb60ba341c4e8d';
+            audio.src=url;
+            audio.play();
+          }
+
+          function maximize () {
+            var el = document.querySelector("canvas");
+            var fs = el.webkitRequestFullScreen || el.requestFullScreen || msRequestFullScreen;
+            fs.call(el);
+          }
+
+          var demo = new Demo(document.getElementById("canvas"),document.getElementById("fragment").innerText);
+
+          var bands = {
+            low: clubber.band({from:10, to:32, smooth: [0.2,0.2,0.2,0.2]}),
+            mid: clubber.band({from:32, to:48, smooth: [0.1,0.1,0.1,0.1]}),
+            high: clubber.band({from:64, to:128, smooth: [0.2,0.2,0.2,0.2]})
+          };
+
+          function play (src) {
+            var url = 'http://api.soundcloud.com/tracks/'  + document.querySelector("input").value + '/stream' +
+            '?client_id=56c4f3443da0d6ce6dcb60ba341c4e8d';
+            audio.src=url;
+            audio.play();
+          }
+          
+          function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(location.search);
+            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+          }
+          
+          var id = getParameterByName("id");
+          if (id) document.getElementById("tid").value = id;
+          
+          function  render(time) {
+            window.requestAnimationFrame(render);
+            clubber.update();
+            var data = {};
+            for (k in bands) { data[k] = bands[k](time); }
+            demo.update(time/1000, data);
+          }
+
+          play();
+          render(0);
+        </script>
+    </body>
+</html>

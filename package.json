@@ -1,0 +1,29 @@
+{
+  "name": "clubber",
+  "version": "1.0.0",
+  "description": "A web audio analysis library that takes musical key into account.",
+  "main": "./clubber.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wizgrav/clubber.git"
+  },
+  "keywords": [
+    "dancer",
+    "clubber",
+    "music",
+    "audio",
+    "analysis",
+    "midi",
+    "key",
+    "note",
+    "analyzer",
+    "rhythm",
+    "visualisation"
+  ],
+  "author": "Yannis Gravezas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wizgrav/clubber/issues"
+  },
+  "homepage": "https://github.com/wizgrav/clubber#readme"
+}
