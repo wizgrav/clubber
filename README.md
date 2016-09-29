@@ -40,3 +40,7 @@ var analysedArray = band(); // Calling the closure updates this specific band an
 ```
 
 In practice one would instantiate several band closures each covering a different range of midi notes, low mid high etc, call them every render iteration and pass the returned arrays/vec4s as uniforms in webgl shaders. By creatively combining the results of the analysis, the rhythmic patterns in the sound will emerge in the graphics as well. Check the demo's glsl code for reference but the creative potential is huge so I urge you to experiment and if you do make a demo and feel like sharing, drop me a note and I'll include it here for reference. That's pretty much everything concerning the library's functionality, have fun turning your favorite rhythms into color :)
+
+### Clubber in the wild ###
+
+[Waveform demo by spleen] (https://github.com/spleennooname/webg-clubber-demo) 
