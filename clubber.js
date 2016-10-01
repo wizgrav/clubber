@@ -137,7 +137,7 @@ Clubber.prototype.band = function (config) {
       // Filter with adaptive threshold
       if (v > obj.scope.thresholds[i]) {
         // Sum musical keys, octave(bass vs tremble) and overall volume.
-        vsum += v - 128;
+        vsum += Math.max(0, v - 128);
         nsum += i % 12;
         osum += i;
         cnt++;
