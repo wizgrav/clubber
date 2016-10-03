@@ -1,6 +1,6 @@
 {
   "name": "clubber",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A web audio analysis library that takes musical key into account.",
   "main": "./clubber.js",
   "repository": {

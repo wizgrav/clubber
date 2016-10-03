@@ -175,7 +175,6 @@ Clubber.prototype.band = function (config) {
 
 // You can pass the frequency data on your own using the second argument.
 Clubber.prototype.update =  function (time, data) {
-  var c = this.cache;
   if (!data) {
     this.analyser.getByteFrequencyData(this.data);
     data=data;
