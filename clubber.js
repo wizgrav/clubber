@@ -197,3 +197,5 @@ Clubber.prototype.update =  function (time, data) {
   this.time = time !== undefined ? parseFloat(time) : window.performance.now();
   this.count++;
 };
+
+module.exports = Clubber;
