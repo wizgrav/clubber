@@ -45,4 +45,4 @@ In practice one would instantiate several band closures each covering a differen
 
 [Waveform demo by spleen] (https://github.com/spleennooname/webg-clubber-demo) 
 
-[AFRAME post processing demo by wizgrav] (http://wizgrav.github.io/aframe/examples/test/post-processing-clubber/)
+[AFRAME component & demo by wizgrav] (http://wizgrav.github.io/aframe-clubber/demo/)
