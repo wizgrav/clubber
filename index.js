@@ -1,5 +1,5 @@
 /* 
-* clubber.js 1.0.0 Copyright (c) 2016, Yannis Gravezas All Rights Reserved.
+* clubber.js 1.1.0 Copyright (c) 2016, Yannis Gravezas All Rights Reserved.
 * Available via the MIT license. More on http://github.com/wizgrav/clubber.
 */
 
@@ -8,9 +8,10 @@ var Clubber = function (config) {
   this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   this.analyser = this.audioCtx.createAnalyser();
   this.analyser.fftSize = config.size || 2048;
+  this.analyser.smoothingTimeConstant = 0.66;
   this.bufferLength = this.analyser.frequencyBinCount;
   
-  this.thresholdFactor = config.thresholdFactor || 0.66;
+  this.thresholdFactor = config.thresholdFactor || 0.33;
   
   if (!config.mute) this.analyser.connect(this.audioCtx.destination);
   
@@ -83,6 +84,7 @@ var Clubber = function (config) {
     }
     return nmidi;
   }
+  var lastkey=0,idx=0;
   for(var i = 0, inc=(this.audioCtx.sampleRate/2)/this.bufferLength; i < this.bufferLength;i++){
     var freq = (i+0.5)*inc;
     var key = freq2midi(freq);
@@ -101,7 +103,7 @@ Clubber.prototype.listen = function (el) {
 };
 
 Clubber.prototype.band = function (config) {
-  var defaults = { from:1, to:128, snap: 0.66, smooth: [0.33, 0.33, 0.33, 0.33], step: 1000/60 };
+  var defaults = { from:1, to:128, snap: 0.33, smooth: [0.1, 0.1, 0.1, 0.1], step: 1000/60 };
   if(config){
     for (var k in defaults) {
       if (!config[k]) config[k] = defaults[k];
@@ -111,36 +113,33 @@ Clubber.prototype.band = function (config) {
   } 
   
   var obj = {
+    idx: 0,
+    avg: 0,
     count: 0,
     scope: this,
     config:config,
     data: new Float32Array(4)
   };  
 
-  return function (config) {
-    if (config) {
-      for (var k in obj.config) {
-        if (config[k] !== undefined) obj.config[k] = config[k]
-      }
-    }
-    config = obj.config;
-    
+  return function (output, offset) {
+    var config = obj.config;
+    offset = offset || 0;
     if (obj.time > obj.scope.time) {
       return obj.data;
     }
     
     var s = config.smooth, arr = obj.data;
-    var idx=-1, val=0, osum=0, vsum=0, nsum = 0, cnt=0;
+    var idx=0, val=0, vsum=0, nsum = 0, cnt=0;
 
     for(var i=config.from; i < config.to;i++){
       var v = obj.scope.notes[i];
-      var thr = obj.scope.thresholds[i];
       // Filter with adaptive threshold
-      if (v > thr) {
+      if (v > obj.scope.thresholds[i]) {
+        
         // Sum musical keys, octave(bass vs tremble) and overall volume.
-        vsum += Math.max(0, v - 128);
-        nsum += i % 12;
-        osum += i;
+        var vn = Math.max(0, v - 128); 
+        vsum += vn;
+        nsum += ( i % 12 ) * vn;
         cnt++;
 
         // Strongest note.
@@ -159,22 +158,35 @@ Clubber.prototype.band = function (config) {
       return f * v + (1 - f) * o;
     }
     
+    // Use the latest note info when notes actually triggered
+    if(cnt) {
+      obj.idx=(idx%12)/12;
+      obj.avg=(nsum/vsum)/12;
+    }
+    
+    // fixed timestep
     if (obj.time === undefined) obj.time = obj.scope.time;
     for (var t = obj.time, step = obj.config.step, tmax = obj.scope.time + step ; t <= tmax; t += step) {
-      arr[0] = smooth((idx % 12)/12, arr[0], s[0]);
-      arr[1] = smooth((cnt ? nsum/cnt : 0)/12 , arr[1], s[1]);
-      arr[2] = smooth(((cnt ? osum/cnt : 0) - config.from)/(config.to - config.from), arr[2], s[2]);
-      arr[3] = smooth(((cnt ? vsum/cnt:0))/128, arr[3], s[3]);
+      arr[0] = smooth(obj.idx, arr[0], s[0]); // Strongest note
+      arr[1] = smooth(obj.avg , arr[1], s[1]); // Power weighted note average
+      arr[2] = smooth(Math.max(0,val-128)/128, arr[2], s[2]); // Strongest note's power
+      arr[3] = smooth(((cnt ? vsum/cnt:0))/128, arr[3], s[3]); // Average note power
     }
     obj.time = t;
     obj.count = obj.scope.count;
-    
-    return arr;
+    if (output instanceof Float32Array) {
+      output.set(arr, offset);
+    } else if(output.set){
+      output.set(arr[0], arr[1], arr[2], arr[3]);
+    } else if(Array.isArray(output)){
+      for (var i = 0; i < 4; i++) output[offset+i] = arr[i];
+    }
   };
 };
 
 // You can pass the frequency data on your own using the second argument.
 Clubber.prototype.update =  function (time, data) {
+  var c = this.cache, self=this;
   if (!data) {
     this.analyser.getByteFrequencyData(this.data);
     data=data;
@@ -198,4 +210,4 @@ Clubber.prototype.update =  function (time, data) {
   this.count++;
 };
 
-module.exports = Clubber;
+module.exports = window.Clubber = Clubber;

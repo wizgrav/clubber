@@ -1,8 +1,11 @@
 {
   "name": "clubber",
-  "version": "1.0.3",
-  "description": "A web audio analysis library that takes musical key into account.",
-  "main": "./clubber.js",
+  "version": "1.1.0",
+  "description": "Audio analysis taking musical key into account.",
+  "main": "./index.js",
+  "scripts": {
+    "dist": "webpack index.js dist/clubber.js && uglifyjs dist/clubber.js -o dist/clubber.min.js --source-map dist/clubber.min.js.map"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wizgrav/clubber.git"
@@ -25,5 +28,9 @@
   "bugs": {
     "url": "https://github.com/wizgrav/clubber/issues"
   },
-  "homepage": "https://github.com/wizgrav/clubber#readme"
+  "homepage": "https://github.com/wizgrav/clubber#readme",
+  "devDependencies": {
+    "webpack": "^1.13.0",
+    "uglifyjs": "^2.4.10"
+  }
 }
