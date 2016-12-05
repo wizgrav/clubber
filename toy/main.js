@@ -4,7 +4,9 @@ function getParameterByName(name) {
   return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
+// Shadertoy ids
 var shaderIds = ["4dsGzH","MsjSW3","4tlSzl", "MdlXRS","lslXDn","XsXXDn","MdBSDt","MlXSWX","XsBXWt"];
+
 shaderIds.forEach(function (s, i) {
   var p = getParameterByName("s"+i);
   if (p) shaderIds[i] = p;
@@ -14,10 +16,9 @@ var info = document.getElementById("info");
 
 function threshold(){
   var id=(count++)% 3;
-  var names = ["low", "mid", "high"];
   info.innerHTML = ["low", "mid", "high"][id];
-  info.style.opacity = 0.2 + 0.3*id;
-  clubber.analyser.smoothingTimeConstant = [0.92, 0.8, 0.66][id];
+  info.style.opacity = 0.2 + 0.3 * id;
+  clubber.smoothing = [0.66, 0.8, 0.92][id];
 }
 var count = 1;
 
@@ -75,14 +76,19 @@ if(arr = getParameterByName("correct")) {
   arr.split(",").forEach(function (v, i) {correctArray[i] = parseFloat(v);});
   needsCorrection = true;
 }
+var noise = document.querySelector("#noise");
 var uniforms = {
   iMusic: new Float32Array(16),
   iCorrect: correctArray,
   iResolution: [gl.canvas.width, gl.canvas.height,0],
-  iChannel0: twgl.createTexture(gl, {src: document.querySelector("#noise")}),  
+  iChannel0: twgl.createTexture(gl, {src: noise}),  
   iChannelResolution: [256,256,0],
   iCorrect: correctArray
 };
+
+noise.addEventListener("load", function () {
+  twgl.setTextureFromElement(gl, uniforms.iChannel0, this);
+})
 
 var shaders = [], currentShaders = [];
 shaderIds.forEach(function (id) {

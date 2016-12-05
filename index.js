@@ -1,14 +1,26 @@
 /* 
-* clubber.js 1.1.0 Copyright (c) 2016, Yannis Gravezas All Rights Reserved.
+* clubber.js 1.2.0 Copyright (c) 2016, Yannis Gravezas All Rights Reserved.
 * Available via the MIT license. More on http://github.com/wizgrav/clubber.
 */
 
 var Clubber = function (config) {
   if (!config) config = {};
   this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  this.analyser = this.audioCtx.createAnalyser();
-  this.analyser.fftSize = config.size || 2048;
-  this.analyser.smoothingTimeConstant = 0.66;
+  
+  var analyser = this.audioCtx.createAnalyser();
+  analyser.fftSize = config.size || 2048;
+  
+  Object.defineProperty(this, 'smoothing', {
+    get: function() {
+      return analyser.smoothingTimeConstant;
+    },
+    set: function(value) {
+      analyser.smoothingTimeConstant = value;
+    }
+  });
+  
+  this.analyser = analyser;
+  
   this.bufferLength = this.analyser.frequencyBinCount;
   
   this.thresholdFactor = config.thresholdFactor || 0.33;
@@ -82,7 +94,7 @@ var Clubber = function (config) {
         nmidi=nmidi+supinf;
         compteur=compteur-1;
     }
-    return nmidi;
+    return Math.min(nmidi,160);
   }
   var lastkey=0,idx=0;
   for(var i = 0, inc=(this.audioCtx.sampleRate/2)/this.bufferLength; i < this.bufferLength;i++){
@@ -91,14 +103,17 @@ var Clubber = function (config) {
     this.keys[i] = key;
     this.weights[key]++;
   }
-  
-  this.count = 0;
 };
 
-Clubber.prototype.listen = function (el) {
-  this.el = el;
+Clubber.prototype.listen = function (obj) {
   if (this.source) { this.source.disconnect(this.analyser); }
-  this.source = this.audioCtx.createMediaElementSource(el);
+  if ( obj instanceof AudioNode ) {
+    this.el = null;
+    this.source = obj;
+  } else {
+    this.el = obj;
+    this.source = this.audioCtx.createMediaElementSource(obj);
+  }
   this.source.connect(this.analyser);
 };
 
@@ -150,7 +165,7 @@ Clubber.prototype.band = function (config) {
       }
     }
 
-    // Exponential smoothing. When negative config.snap is used when value rises and abs(value) when falling.
+    // Exponential smoothing. When negative: config.snap is used when value rises and abs(value) when falling.
     function smooth(v,o,f){
       v = !v ? 0 : v;
       f = Math.min(f, obj.config.snap);
@@ -158,7 +173,7 @@ Clubber.prototype.band = function (config) {
       return f * v + (1 - f) * o;
     }
     
-    // Use the latest note info when notes actually triggered
+    // Dont change if notes haven't triggered
     if(cnt) {
       obj.idx=(idx%12)/12;
       obj.avg=(nsum/vsum)/12;
@@ -172,15 +187,19 @@ Clubber.prototype.band = function (config) {
       arr[2] = smooth(Math.max(0,val-128)/128, arr[2], s[2]); // Strongest note's power
       arr[3] = smooth(((cnt ? vsum/cnt:0))/128, arr[3], s[3]); // Average note power
     }
+    
     obj.time = t;
-    obj.count = obj.scope.count;
-    if (output instanceof Float32Array) {
-      output.set(arr, offset);
-    } else if(output.set){
-      output.set(arr[0], arr[1], arr[2], arr[3]);
-    } else if(Array.isArray(output)){
-      for (var i = 0; i < 4; i++) output[offset+i] = arr[i];
+    
+    if (output) {
+      if (output instanceof Float32Array) {
+        output.set(arr, offset);
+      } else if(output.set){
+        output.set(arr[0], arr[1], arr[2], arr[3]);
+      } else if(Array.isArray(output)){
+        for (var i = 0; i < 4; i++) output[offset+i] = arr[i];
+      }
     }
+    return arr;
   };
 };
 
@@ -189,14 +208,14 @@ Clubber.prototype.update =  function (time, data) {
   var c = this.cache, self=this;
   if (!data) {
     this.analyser.getByteFrequencyData(this.data);
-    data=data;
+    data = this.data;
   }
   // Calculate energy per midi note
   for(var i = 0; i < this.notes.length;i++){
     this.notes[i] = 0;
   }
   for(i = 0; i < this.keys.length;i++){
-    this.notes[this.keys[i]] += this.data[i];
+    this.notes[this.keys[i]] += data[i];
   }
   for(i = 0; i < this.notes.length;i++){
     this.notes[i] /= this.weights[i];
@@ -207,7 +226,6 @@ Clubber.prototype.update =  function (time, data) {
     if(this.thresholds[i] > 128) this.thresholds[i]--;
   }
   this.time = time !== undefined ? parseFloat(time) : window.performance.now();
-  this.count++;
 };
 
 module.exports = window.Clubber = Clubber;
