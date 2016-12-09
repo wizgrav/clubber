@@ -100,7 +100,7 @@ shaderIds.forEach(function (id) {
   shaders.push(shader);
   shader.id = id;
 });
-currentShaders.push(shaders[0]);
+currentShaders.push(shaders[8]);
 var debugShader = new Shader(gl, { 
     source: load("toy/shaders/debug.fs"), 
     uniforms: uniforms, 
