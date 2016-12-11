@@ -65,7 +65,7 @@ function play (src, dropped) {
     lastObjectUrl = null;
   }
   if(!dropped) {
-    src += '/stream?client_id=' + CLIENT_ID;
+    src = '//api.soundcloud.com/tracks/'+src+'/stream?client_id=' + CLIENT_ID;
   } else {
     lastObjectUrl = src;
   }
@@ -111,7 +111,7 @@ function soundcloud(url) {
       return;
     }
     info.innerHTML = "<a href='"+data.permalink_url+"' target='_blank'>Listening to "+data.title+" by "+data.user.username+"</a>";
-    play(data.uri);
+    play(data.id);
   }, function () {
     alert("This is not a valid soundcloud track url.")
   })
