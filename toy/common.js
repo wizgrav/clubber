@@ -103,7 +103,7 @@ function change () {
 }
 
 function soundcloud(url) {
-  load("http://api.soundcloud.com/resolve?url=" + encodeURIComponent(url.split("?")[0]) + "&client_id=" + CLIENT_ID).then(function (text) {
+  load("//api.soundcloud.com/resolve?url=" + encodeURIComponent(url.split("?")[0]) + "&client_id=" + CLIENT_ID).then(function (text) {
     var data = JSON.parse(text);
     console.log(data);
     if (data.kind !== "track"){
