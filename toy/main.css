@@ -1,0 +1,75 @@
+* {
+  margin:0;
+  padding:0;
+}
+body {
+  font-family:monospace;
+  overflow: hidden;
+}
+#header {
+  position:fixed;
+  padding-top:0.33vh;
+}
+audio {
+  position: fixed;
+  bottom:0;
+  left: 0;
+  width:100%;
+}
+body, canvas {
+  width: 100vw;
+  height: 100vh;
+}
+
+
+#header #info {
+  padding-top:1vh;
+  width: 100vw;
+  font-size: 1.8vh;
+  transition: opacity 0.33s;
+  overflow: hidden;
+  opacity:0;
+}
+
+#header:hover #info {
+  opacity: 1;
+}
+
+#header #info a {
+  text-decoration: none;
+  color: #ccc;
+  text-shadow: 1px 1px #666;
+}
+
+#header img {
+  vertical-align: middle;
+}
+
+span {
+  color: white;
+  font-weight:bold;
+  font-size: 2vh;
+  text-shadow: 1px 1px black;
+  vertical-align: middle;
+
+}
+
+button {
+  font-family: monospace;
+  background-color: #000;
+  font-size: 1.6vh;
+  border: 0.2vh solid white;
+  color: white;
+  border-radius:2vh;
+  padding: 0.4vh 1vh;
+  margin-right:0.1vh;
+  cursor:pointer;
+}
+
+button:hover {
+  background-color: white;
+  color: black;
+}
+button:focus {
+  outline:0;
+}

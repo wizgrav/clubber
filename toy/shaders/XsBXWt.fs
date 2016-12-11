@@ -35,17 +35,17 @@ mat2 rot(float a) {
 
 // "Amazing Surface" fractal
 vec4 formula(vec4 p) {
-		p.xz = abs(p.xz + 1.)-abs(p.xz-1.2 + iMusic[2].w/3. )-p.xz;
+		p.xz = abs(p.xz + 1.)-abs(p.xz - 1.2 + iMusic[2].w / 3.) - p.xz;
 		p.y-=.25;
-		p.xy*=rot(radians(30. + 5. ));
-		p=p*2./clamp(dot(p.xyz,p.xyz),.2,min(1.05, 0.95 + abs(iMusic[1].z - iMusic[0].z)/3.));
+		p.xy *= rot(radians(35.));
+        p=p*2./clamp(dot(p.xyz,p.xyz),.2,min(1.05, 0.95 + abs(iMusic[1].z - iMusic[0].z)/3.));
 	return p;
 }
 
 // Distance function
 float de(vec3 pos) {
 #ifdef WAVES
-	pos.y+=sin(pos.z-t*6.+dot(iMusic[0].xw, iMusic[1].xw))*.15; //waves!
+	pos.y+=sin(pos.z-t*6.+dot(iMusic[0].xz, iMusic[1].xz))*.15; //waves!
 #endif
 	float hid=0.;
 	vec3 tpos=pos;
@@ -55,7 +55,7 @@ float de(vec3 pos) {
 	float fr=(length(max(vec2(0.),p.yz-1.5))-1.)/p.w;
 	float ro=max(abs(pos.x+1.)-.3,pos.y-.35);
 		  ro=max(ro,-max(abs(pos.x+1.)-.1,pos.y-.5));
-	pos.z=abs(.25-mod(pos.z,.5+iMusic[0].x*0.1));
+	pos.z=abs(.25 - mod(pos.z - 2. * length(iMusic[2].xz),.5));
 		  ro=max(ro,-max(abs(pos.z)-.2,pos.y-.3));
 		  ro=max(ro,-max(abs(pos.z)-.01,-pos.y+.32));
 	float d=min(fr,ro);
@@ -116,12 +116,12 @@ vec3 raymarch(in vec3 from, in vec3 dir)
 #endif		
 	totdist=clamp(totdist,0.,26.);
 	dir.y-=.02;
-	float sunsize=7. - length(iMusic[2].xz); // responsive sun size
-	float an=atan(dir.x,dir.y)+iGlobalTime*1.5 + length(iMusic[2].xw); // angle for drawing and rotating sun
+	float sunsize= 7. - length(iMusic[2].xw); // responsive sun size
+	float an=atan(dir.x,dir.y)+iGlobalTime * 1.5 + length(iMusic[2].xyz); // angle for drawing and rotating sun
 	float s=pow(clamp(1.0-length(dir.xy)*sunsize-abs(.2-mod(an,.4)),0.,1.),.1); // sun
 	float sb=pow(clamp(1.0-length(dir.xy)*(sunsize-.2)-abs(.2-mod(an,.4)),0.,1.),.1); // sun border
-	float sg=pow(clamp(1.0-length(dir.xy)*(sunsize-4.5-3.*iMusic[3].w)-.5*abs(.2-mod(an,.4)),0.,1.),3.); // sun rays
-	float y=mix(.45,1.2,pow(smoothstep(0.,1.,.75-dir.y),2. - iMusic[2].x))*(1.-sb*.5); // gradient sky
+	float sg=pow(clamp(1.0-length(dir.xy)*(sunsize - 4.5 - 2. * mix(iMusic[3].w, iMusic[3].z, iMusic[2].z) )-.5*abs(.2-mod(an,.4)),0.,1.),3.); // sun rays
+	float y=mix(.45,1.2,pow(smoothstep(0.,1.,.75-dir.y),2. + iMusic[2].z))*(1.-sb*.5); // gradient sky
 	
 	// set up background with sky and sun
 	vec3 backg=vec3(0.5,0.,1.)*iTransition*((1.-s)*(1.-sg)*y+(1.-sb)*sg*vec3(1.,.8,0.15)*3.);

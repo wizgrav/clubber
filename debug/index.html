@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta name="twitter:card" content="player">
+        <meta name="twitter:site" content="@wizgrav">
+        <meta name="twitter:title" content="Clubber debugger">
+        <meta name="twitter:description" content="A tool for music visual research">
+        <meta name="twitter:player" content="https://wizgrav.github.io/debug/index.html">
+        <meta name="twitter:player:width" content="600">
+        <meta name="twitter:player:height" content="370">
+
+        <meta charset="utf-8">        
+        <meta name="author" content="Yannis Gravezas <wizgrav@gmail.com>">
+        <meta name="description" content="A tool for music visual research">
+
+        <!-- Mobile Stuff -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="msapplication-tap-highlight" content="no">
+
+        <!-- Chrome on Android -->
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="application-name" content="Clubber debugger">
+        <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon.png">
+
+        <!-- Safari on iOS -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="Clubber debugger">
+        <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+        <!-- Windows 8 -->
+        <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon.png">
+        <meta name="msapplication-TileColor" content="#FFFFFF">
+
+
+        <meta name="theme-color" content="#000000">
+
+        <link rel="shortcut icon" href="favicon.ico">
+
+        <title>Clubber debugger</title>
+        <link href='../toy/main.css' rel='stylesheet' type='text/css'>
+        <style>
+          #info {
+            opacity:1 !important;
+            display: inline;
+          }
+          
+          #editor {
+            margin:0;
+            padding:0;
+          }
+          #editor div {
+            position:relative;
+          }
+          #editor input[type=text]{
+            margin-top:0.4vh;
+            font-size: 1.6vh;
+            font-family:monospace;
+            display:inline-block;
+            width:99.6vw;
+          }
+          #editor input[type=checkbox]{
+            z-index:1;
+            height:1.6vh;
+            position:absolute;
+            right:0;
+            top:0.66vh;
+          }
+          #editor div.red input[type=text]{
+            border: 0.2vw solid #FF0000;
+          }
+          #editor div.green input[type=text]{
+            border: 0.2vw solid #00FF00;
+          }
+          #editor div.blue input[type=text]{
+            border: 0.2vw solid #0000FF;
+          }
+        </style>
+    </head>
+
+    <body>    
+      <audio controls></audio>
+    
+      <div id="header" title="You can also drag & drop audio files.">
+        <img src="../toy/soundcloud.png"/>
+        <button onclick="change()" >change track</button>
+        <button onclick="maximize()">fullscreen</button>
+        <div id="info"></div>
+        <div id="editor">
+          <div class="red">
+            <input type="text" onkeyup="if(event.keyCode == 13) reload()"
+            value="length(iMusic[0].yz) * min(iMusic[0].w, iMusic[1].w)" />
+            <input type="checkbox" id="radioRed" onchange="reload()" checked/>
+          </div>
+          <div class="green">
+            <input type="text" onkeyup="if(event.keyCode == 13) reload()"
+            value="mix(iMusic[3].w, iMusic[3].z, iMusic[2].y)"/>
+            <input type="checkbox" id="radioRed" onchange="reload()" checked/>
+          </div>
+          <div class="blue">
+            <input type="text" onkeyup="if(event.keyCode == 13) reload()"
+              placeholder="Write glsl in the fields and press enter to compile"
+            />
+            <input type="checkbox" id="radioRed" onchange="reload()" checked/>
+          </div>
+        </div>
+        
+      </div>
+      <canvas></canvas>
+      <script src="../dist/clubber.js"></script>
+      <script src="../toy/twgl.min.js"></script>
+      <script src="../toy/shader.js"></script>
+      <script src="../toy/common.js"></script>
+      <script src="debug.js"></script>
+    </body>
+</html>

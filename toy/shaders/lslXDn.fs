@@ -37,12 +37,12 @@ vec2 field4( in vec2 x )
     {
 		vec2 g = vec2( float(i),float(j) );
 		vec2 r = g - f;
-		float minkpow = max(0.2,max(iMusic[3].w,iMusic[1].w))*3.+ min(iMusic[1].w,iMusic[2].w);
+		float minkpow = (0.3 * iMusic[3].x + 0.3 * length(vec3(iMusic[2].xw,iMusic[1].yz)))*3.+.8;
 		float d = pow(pow(abs(r.x),minkpow)+pow(abs(r.y),minkpow),1./minkpow)*.5;
-		d *= max(0.5,max(iMusic[1].w,iMusic[2].w))*1.4+.5;
-		d = sin(d*10.+time*0.1 + iMusic[0].w);
+		d *= (0.3 * iMusic[3].y + 0.3 * length(vec3(iMusic[1].xw,iMusic[2].yz)))*1.4+.5;
+		d = sin(d*10. + time * 0.1  + 3. * length(iMusic[0].yz) * max(iMusic[0].w, iMusic[1].w));
 		m.x *= d;
-		m.y += d*1. ;
+		m.y += d*1.2;
     }
 	return pow(abs(m),vec2(0.8));
 }
@@ -89,7 +89,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	col *= fbm(p*70.)*0.2+0.85;
 	
 	//vignetting
-	col *= 1.-pow(dot(p,p),2.+ min(iMusic[1].z, iMusic[2].z))*0.9e-4;
+	col *= 1.-pow(dot(p,p),2.+ dot(iMusic[1].xz, iMusic[0].xz))*0.9e-4;
 	
 	fragColor = vec4(pow(col,vec3(0.6))-0.1,1.0);
 }

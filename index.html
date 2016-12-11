@@ -39,76 +39,25 @@
     <link rel="shortcut icon" href="favicon.ico">
 
     <title>ClubberToy&trade;</title>
-    <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
-    <style>
-      * {
-        margin:0;
-        padding:0;
-      }
-      body {
-        overflow: hidden;
-      }
-      #header {
-        position:fixed;
-      }
-      audio {
-        position: fixed;
-        bottom:0;
-        left: 0;
-        width:100%;
-      }
-      body, canvas {
-        width: 100vw;
-        height: 100vh;
-      }
-
-      #header a {
-        text-decoration: none;
-        color: gray;
-        font-family: monospace;
-        font-size: 12px;
-      }
-
-      #header img {
-        vertical-align: middle;
-      }
-
-      span {
-        font-family: monospace;
-        color: white;
-        font-weight:bold;
-        font-size: 16px;
-        text-shadow: 1px 1px black;
-      }
-
-      button {
-        font-family:monospace;
-        background-color: #000;
-        border: 1px solid white;
-        color: white;
-        border-radius:1px;
-        padding: 2px;
-        margin-right:2px;
-      }
-    </style>
-      
+    <link href='toy/main.css' rel='stylesheet' type='text/css'>  
   </head>
 
   <body>
-    <div id="header" title="enter the id of a soundcloud track and press play. You can also drag & drop audio files on the page.">
+    <audio controls></audio>
+    
+    <div id="header" title="You can also drag & drop audio files.">
       <img src="toy/soundcloud.png"/>
-      <input id="tid" type="text" placeholder="enter soundcloud track id" style="width: 100px;" value="51531961"/> 
-      <button onclick="play()">load</button>
-      <button onclick="maximize()">full</button>
+      <button onclick="change()" >change track</button>
+      <button onclick="maximize()">fullscreen</button>
       <span>[1-9] switch shader </span>
       <span>[0] smoothing </span>
-      <span id="info"></span>
+      <span id="smoothing"></span>
       <span>&nbsp;[V] view bands</span>
-      <audio id="audio" controls></audio>
+      <div id="info"></div>
     </div>
 
     <img id="noise" src="toy/noise.png" style="display:none"/>
-    <canvas id="canvas"></canvas>
+    <canvas></canvas>
 
     <!--githubcorner-->
     <a href="https://github.com/wizgrav/clubber/" target="_blank" class="github-corner">
@@ -123,6 +72,7 @@
     <script src="dist/clubber.js"></script>
     <script src="toy/twgl.min.js"></script>
     <script src="toy/shader.js"></script>
+    <script src="toy/common.js"></script>
     <script src="toy/main.js"></script>
   </body>
 </html>

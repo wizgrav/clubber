@@ -2,9 +2,9 @@ clubber
 ========
 
 #### Javascript music analysis library ####
-Clubber is a small library that analyzes the frequency data from an audio source and extracts rhythmic information. The processing takes the music key into account and outputs data in a form suitable for direct use in webgl shaders. It is a step above simple beat detection and allows for rapid creation of visualisations that sync pleasantly with the audio.
+Clubber is a library that analyzes the frequency data from an audio source and extracts the underlying rhythmic information. The processing takes the musical key into account and outputs data in a form suitable for direct use in webgl shaders, but can easily be used in any other context as well. The concept is much more powerful than a simple beat/peak detection and greatly assists the development of visualisations that sync pleasantly with the audio.
 
-[ClubberToy demo](http://wizgrav.github.io/clubber/) 
+[ClubberToy demo](http://wizgrav.github.io/clubber/) - [Rhythm debugger](http://wizgrav.github.io/clubber/debug)
 
 ### Usage ###
 
@@ -53,10 +53,10 @@ The energy per midi note will be contained in the Clubber.notes array but the li
 
 The produced array elements are normalized floats(0-1) and represent: 
 
-* the strongest note (where the highest energy is)
-* the power weighted average of all notes
-* the power of the strongest note 
-* the average energy of all notes
+* the strongest note (where the highest energy is) (x)
+* the power weighted average of all notes (y)
+* the power of the strongest note (z)
+* the average energy of all notes (w)
 
 The processing only takes into account notes which pass an adaptive threshold. You can tune that via Clubber.thresholdFactor which takes a value of 0-1. You can also tune via Clubber.smoothing which is a shortcut for the internal analyser's smoothingTimeConstant(default is 0.8 and is much more sensitive than thresholdFactor).
 
@@ -67,13 +67,23 @@ var band = clubber.band({
     to: 64 // maximum midi note, up to 160.
     smooth: [0.1, 0.1, 0.1, 0.1] // Exponential smoothing factors for each of the four returned values
 });
-clubber.update(); // This should happen first for data to be current for all bands
+clubber.update(); // This should happen first for frequency data to be current for all bands
 
 // Calling the closure updates an object which can be Float32Array|Array|Three.Vector4|undefined
 var analysedArray = band(vec4); // The internal Float32Array is also returned for convenience
 ```
 
-In practice one would instantiate several band closures each covering a different range of midi notes, low mid high etc, calling these every render iteration and passing the returned arrays/vec4s as uniforms in webgl shaders. By creatively combining the results of the analysis, the rhythmic patterns in the sound will emerge in the graphics as well. Check the demo's glsl code for reference. If you feel like sharing your demos, drop me a note and I'll include them here for reference. Now have fun spicing up your favorite rhythms with awesome visuals :)
+### Tips ###
+
+In practice one would instantiate several bands each covering a different range of midi notes, low mid high etc, calling these every render iteration and passing the returned arrays/vec4s as modulating uniforms in webgl shaders or wherever needed. 
+
+By creatively combining the results of the analysis, the rhythmic patterns in the sound will emerge in the graphics as well. Simple combinations could be finding the min/max between adjacent band notes/energies or multiply them.
+
+A strategy that works well would be to interpret the analysis results as vectors and operate on these. For instance map a bands strongest note on the x axis, the average note on the Y axis and calculate the length of the vector. You can go further and notes with power. You can map an element from one band with one from another band. 
+
+And since we work with vectors why not just distance or even dot them and see what comes out(Good stuff) These combinations are all plausible, you can check some in the glsl demos that come with the source. You can also experiment on your own and design your modulators in the [very helpful debugger](http://wizgrav.github.io/clubber/debug).
+
+You can also [contact me](mailto://wizgrav@gmail.com) and get to chat or jam together, I'm always open for collaborations with creative people.
 
 ### Clubber in the wild ###
 

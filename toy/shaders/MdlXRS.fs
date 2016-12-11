@@ -21,7 +21,7 @@ mat2 m2 = mat2( 0.80,  0.60, -0.60,  0.80 );
 
 float grid(vec2 p)
 {
-	float s = sin(p.x + iMusic[1].x*iMusic[1].z)*cos(p.y+ iMusic[2].x*iMusic[2].z);
+	float s = sin(p.x + iMusic[2].w)*cos(p.y+ iMusic[2].x*iMusic[2].z);
 	return s;
 }
 

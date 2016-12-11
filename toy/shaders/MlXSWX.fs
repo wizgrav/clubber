@@ -43,12 +43,12 @@ vec3 tri(in vec3 x){return abs(x-floor(x)-.5);} // Triangle function.
 // are bump mapped.
 float surfFunc(in vec3 p){
     
-	return dot(tri(p*0.5 + tri(p*0.25 + length(iMusic[2].xz)/4.).yzx ), vec3(0.666));
+	return dot(tri(p*0.5 + tri(p*0.25 + mix(iMusic[3].w, iMusic[3].z, iMusic[2].y)/4.).yzx ), vec3(0.666));
 }
 
 
 // The path is a 2D sinusoid that varies over time, depending upon the frequencies, and amplitudes.
-vec2 path(in float z){ float s = sin(z/24. + length(iMusic[1].yz)/4.)*cos(z/12.+ length(iMusic[2].yz)/3.); return vec2(s*12., 0.); }
+vec2 path(in float z){ float s = sin(z/24. + length(iMusic[1].yz)/4.)*cos(z/12.+ iMusic[2].w/3.); return vec2(s*12., 0.); }
 
 // Standard tunnel distance function with some perturbation thrown into the mix. A floor has been 
 // worked in also. A tunnel is just a tube with a smoothly shifting center as you traverse lengthwise. 

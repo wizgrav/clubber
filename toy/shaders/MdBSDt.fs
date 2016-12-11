@@ -20,9 +20,9 @@ vec2 rep(vec2 p) {
 
 float spikedBall(vec3 p) {
     p = mod(p, 8.0) - 4.0;
-    float d = length(p) - 1. - length(iMusic[2].xw)/2.;
+    float d = length(p) - 0.8 - length(iMusic[0].xyz) * min(iMusic[2].z, iMusic[3].z);
     p.xz = rep(p.xz); p.xy = rep(p.xy); 
-    return smin(d, length(p.yz)-.1+abs(.15*(p.x - 0.5 - abs(iMusic[2].z - iMusic[2].w)/2.)), 0.1);
+    return smin(d, length(p.yz)-.1+abs(.15*(p.x -  length(iMusic[3].xyw) )), 0.1);
 }
 
 float capsules(vec3 p) {
@@ -33,7 +33,7 @@ float capsules(vec3 p) {
     p.zx = p.zx*cos(iGlobalTime + q.y) + vec2(-p.x, p.z)*sin(iGlobalTime + q.y);
     
     float angle = .3*cos(iGlobalTime + length(iMusic[1].xz))*p.x;
-    p.xy = cos(angle  +  dot(iMusic[1].xw, iMusic[0].xw))*p.xy + sin(angle  +  min(iMusic[0].w, iMusic[1].w))*vec2(-p.y, p.x); p.x += 1.0; 
+    p.xy = cos(angle  +  min(iMusic[1].z, iMusic[0].z))*p.xy + sin(angle  +  length(iMusic[0].yw) * min(iMusic[0].z, iMusic[1].z))*vec2(-p.y, p.x); p.x += 1.0; 
     float k = clamp(2.0*p.x/4.0, 0.0, 1.0); p.x -= 2.*k;
     return length(p) - .5;
 }

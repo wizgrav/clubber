@@ -10,7 +10,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	vec3 wave_color = vec3(0.0);
 	
 	vec4 vol = vec4(iMusic[0].z, iMusic[1].z, iMusic[2].z, iMusic[3].z);
-    vec4 note = vec4(iMusic[0].x, iMusic[1].x, iMusic[2].x, iMusic[3].x);
+    vec4 note = vec4(iMusic[0].y, iMusic[1].x, iMusic[2].x, iMusic[3].x);
 	// To create the waves
 	float wave_width = 0.01;
 	uv  = -1.0 + 2.0 * uv;
