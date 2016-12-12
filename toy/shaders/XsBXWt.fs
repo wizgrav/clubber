@@ -35,10 +35,10 @@ mat2 rot(float a) {
 
 // "Amazing Surface" fractal
 vec4 formula(vec4 p) {
-		p.xz = abs(p.xz + 1.)-abs(p.xz - 1.2 + clamp(smoothstep(iMusic[2].y,1.2,length(iMusic[2].xyz)),0.2,1.0) / 5.2) - p.xz;
+		p.xz = abs(p.xz + 1.)-abs(p.xz - 1.2 + clamp(smoothstep(iMusic[2].y,1.2,length(iMusic[2].xyz)),0.2,1.0) / 5.) - p.xz;
 		p.y-=.25;
 		p.xy *= rot(radians(35.));
-        p=p*2./clamp(dot(p.xyz,p.xyz),.2,min(1.05, 0.95 + abs(length(iMusic[1].z) - length(iMusic[0].z))/3.));
+        p=p*2./clamp(dot(p.xyz,p.xyz),.2,min(1.05, 0.95 + abs(length(iMusic[1].yz) - length(iMusic[0].yz))/3.));
 	return p;
 }
 
@@ -116,7 +116,7 @@ vec3 raymarch(in vec3 from, in vec3 dir)
 #endif		
 	totdist=clamp(totdist,0.,26.);
 	dir.y-=.02;
-	float sunsize= 7. - pow(min(length(iMusic[2].xw),1.0), 1.0 + iMusic[1].z); // responsive sun size
+	float sunsize= 7. - length(iMusic[2].xw); // responsive sun size
 	float an=atan(dir.x,dir.y)+iGlobalTime * 1.5 + length(iMusic[2].xyz); // angle for drawing and rotating sun
 	float s=pow(clamp(1.0-length(dir.xy)*sunsize-abs(.2-mod(an,.4)),0.,1.),.1); // sun
 	float sb=pow(clamp(1.0-length(dir.xy)*(sunsize-.2)-abs(.2-mod(an,.4)),0.,1.),.1); // sun border
