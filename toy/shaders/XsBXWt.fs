@@ -35,7 +35,7 @@ mat2 rot(float a) {
 
 // "Amazing Surface" fractal
 vec4 formula(vec4 p) {
-		p.xz = abs(p.xz + 1.)-abs(p.xz - 1.2 + iMusic[2].w / 3.) - p.xz;
+		p.xz = abs(p.xz + 1.)-abs(p.xz - 1.2 + clamp(smoothstep(0.4,1.2,length(iMusic[2].xyz)),0.2,1.0) / 5.) - p.xz;
 		p.y-=.25;
 		p.xy *= rot(radians(35.));
         p=p*2./clamp(dot(p.xyz,p.xyz),.2,min(1.05, 0.95 + abs(iMusic[1].z - iMusic[0].z)/3.));
