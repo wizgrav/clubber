@@ -11,7 +11,7 @@
 
 
 #define MUSICRAYS 2.2 * pow(mix(iMusic[3].w, iMusic[3].z, iMusic[2].z), 1.0 +min(iMusic[0].w, iMusic[1].w ))
-#define MUSICWAVES smoothstep(min(iMusic[1].y,iMusic[0].y), 1. + max(iMusic[1].y, iMusic[0].y),dot(iMusic[0].xz, iMusic[1].xz))
+#define MUSICWAVES smoothstep(min(iMusic[1].y,iMusic[0].y), 1.3 + max(iMusic[1].y, iMusic[0].y),dot(iMusic[0].xz, iMusic[1].xz))
 #define MUSICMOD1 smoothstep(iMusic[2].w,1.0+iMusic[2].y,length(iMusic[2].xyz))/4.4
 #define MUSICMOD2 abs(length(iMusic[1].yz) - length(iMusic[0].yz))/3.3
 #define MUSICSUNSIZE length(iMusic[2].xw)
