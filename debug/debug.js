@@ -5,9 +5,15 @@ var uniforms = {
   iMusic: new Float32Array(16)
 };
 
+["red", "green", "blue"].forEach(function (s){
+  var v = localStorage.getItem("rhythm-debugger-"+s);
+  if (v) document.querySelector("div." + s + " input[type=text]").value = v;
+});
+
 function getChunk(s) {
   var v = document.querySelector("div." + s + " input[type=text]").value;
   var c = document.querySelector("div." + s + " input[type=checkbox]").checked;
+  if ( v ) localStorage.setItem("rhythm-debugger-"+s, v); else localStorage.removeItem("rhythm-debugger-"+s); 
   return v && c ? v : "0.0";
 }
 
