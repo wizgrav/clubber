@@ -2,11 +2,12 @@
 var shaderIds = ["4dsGzH","MsjSW3","4tlSzl", "MdlXRS","lslXDn","XsXXDn","MdBSDt","MlXSWX","XsBXWt"];
 
 shaderIds.forEach(function (s, i) {
-  var p = getParameterByName("s"+i);
+  var p = getParameterByName("sh"+i);
   if (p) shaderIds[i] = p;
 })
 
 var smoothing = document.getElementById("smoothing");
+
 function threshold(){
   var id=(count++)% 3;
   smoothing.innerHTML = ["low", "mid", "high"][id];
@@ -24,7 +25,6 @@ if(arr = getParameterByName("correct")) {
 var noise = document.querySelector("#noise");
 var uniforms = {
   iMusic: new Float32Array(16),
-  iCorrect: correctArray,
   iResolution: [gl.canvas.width, gl.canvas.height,0],
   iChannel0: twgl.createTexture(gl, {src: noise}),  
   iChannelResolution: [256,256,0],
@@ -50,7 +50,7 @@ currentShaders.push(shaders[8]);
 var debugShader = new Shader(gl, { 
     source: load("toy/shaders/debug.fs"), 
     uniforms: uniforms, 
-    correct: [0,1,1,1]
+    correct: needsCorrection
   });
 
 debugShader.transition = 0.5;
@@ -81,15 +81,30 @@ function onKeyUp(e) {
     shader.startTime = currentTime/1000;
     currentShaders.unshift(shader);
     transitionStart = currentTime;
+    attribution(v);
   }
 }
 
 window.addEventListener("keyup", onKeyUp);
 
+var orig = document.querySelector("#orig");
+  
+function attribution(i) {
+  orig.setAttribute("href", "https://www.shadertoy.com/view/"+shaderIds[i]);
+}
+ 
+smoothArrays = [
+  [0.08,0.09,0.09,0.1],
+  [0.08,0.09,0.09,0.1],
+  [0.08,0.09,0.09,0.1],
+  [0.08,0.09,0.09,0.1]
+];
+
+initClubber();
 
 var transitionTime = 2000;
 
-function  render(time) {
+function render(time) {
   currentTime = time;
   window.requestAnimationFrame(render);
   clubber.update(time);
@@ -107,7 +122,7 @@ function  render(time) {
       currentShaders = [currentShaders.shift()];
       currentShaders[0].transition=1;
     } else {
-      var tr = Math.pow(delta/transitionTime, 2);
+      var tr = Math.pow(delta/transitionTime, 1.6);
       currentShaders.forEach(function (shader, i) {
         shader.transition = i ? 1-tr:tr;
         shader.render(data, true);
@@ -119,5 +134,6 @@ function  render(time) {
   if(debugBands) debugShader.render(data, true);
 }
 
+attribution(8);
 soundcloud("https://soundcloud.com/draufunddran/drauf-und-dran-2eur");
 render(0);

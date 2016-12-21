@@ -1,7 +1,7 @@
 {
   "name": "clubber",
-  "version": "1.2.1",
-  "description": "Audio analysis taking musical key into account.",
+  "version": "1.3.0",
+  "description": "Realtime music analysis for audio reactive visualizations.",
   "main": "./index.js",
   "scripts": {
     "dist": "webpack index.js dist/clubber.js && uglifyjs dist/clubber.js -o dist/clubber.min.js --source-map dist/clubber.min.js.map"
@@ -14,6 +14,8 @@
     "dancer",
     "clubber",
     "music",
+    "notes",
+    "octave",
     "audio",
     "analysis",
     "midi",
@@ -21,6 +23,7 @@
     "note",
     "analyzer",
     "rhythm",
+    "reactive",
     "visualisation"
   ],
   "author": "Yannis Gravezas",

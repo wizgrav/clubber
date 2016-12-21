@@ -76,6 +76,9 @@
           #editor div.blue input[type=text]{
             border: 0.2vw solid #0000FF;
           }
+          button.disabled {
+            opacity:0.66;
+          }
         </style>
     </head>
 
@@ -84,8 +87,9 @@
     
       <div id="header" title="You can also drag & drop audio files.">
         <img src="../toy/soundcloud.png"/>
-        <button onclick="change()" >change track</button>
-        <button onclick="maximize()">fullscreen</button>
+        <button onclick="change()" >track</button>
+        <button onclick="maximize()">full</button>
+        <button onclick="bands(this)" class="disabled">debug</button>
         <div id="info"></div>
         <div id="editor">
           <div class="red">

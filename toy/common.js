@@ -17,21 +17,66 @@ var data = {}, needsCorrection = false;
 var clubber = new Clubber({thresholdFactor:0, size: 4096});
 clubber.listen(audio);
 
-var smoothArray = [0.1,0.1,0.1,0.1];
+var types = ["band", "band", "band", "band"];
 
-if(getParameterByName("smooth")) {
-  smoothArray = getParameterByName("smooth").split(",").forEach(function(s,i){
-    if( i < smoothArray.length) smoothArray[i] = parseFloat(s);
-  });
-}
-
-data.bands = [
-  clubber.band({from:1, to:32, smooth: smoothArray }),
-  clubber.band({from:32, to:48, smooth: smoothArray }),
-  clubber.band({from:48, to:64, smooth: smoothArray }),
-  clubber.band({from:64, to:96, smooth: smoothArray })
+var smoothArrays = [
+  [0.1,0.1,0.1,0.1],
+  [0.1,0.1,0.1,0.1],
+  [0.1,0.1,0.1,0.1],
+  [0.1,0.1,0.1,0.1]
 ];
 
+var adaptArrays = [
+  [1,1,1,1],
+  [1,1,1,1],
+  [1,1,1,1],
+  [1,1,1,1]
+];
+
+var rangeArrays = [
+  [1, 32, 64, 128],
+  [32, 48, 64, 128],
+  [48, 64, 64, 128],
+  [64, 96,  64, 128]
+];
+
+function initClubber () {
+  for(var i=0; i<4; i++){
+    var param = getParameterByName("s"+i);
+    if(param) {
+      var smoothArray = smoothArrays[i];
+      param.split(",").forEach(function(s,i){
+        if( i < smoothArray.length) smoothArray[i] = parseFloat(s);
+      });
+    }
+    param = getParameterByName("r"+i);
+    if(param) {
+      var rangeArray = rangeArrays[i];
+      param.split(",").forEach(function(s,i){
+        if( i < rangeArray.length) rangeArray[i] = parseFloat(s);
+      });
+    }
+    param = getParameterByName("a"+i);
+    if(param) {
+      var adaptArray = adaptArrays[i];
+      param.split(",").forEach(function(s,i){
+        if( i < adaptArray.length) adaptArray[i] = parseFloat(s);
+      });
+    }
+    param = getParameterByName("t"+i);
+    if(param === "rect") {
+      types[i] = "rect";
+    }
+  }
+
+  data.bands = [];
+  for(var i=0; i<4; i++){
+    data.bands.push( clubber[types[i]]({
+      from: rangeArrays[i][0], to: rangeArrays[i][1], low: rangeArrays[i][2], high: rangeArrays[i][3],
+      smooth: smoothArrays[i], adapt: adaptArrays[i]
+    }));
+  }
+}
 
 var handleDragOver = function(e) {
     e.preventDefault();
@@ -98,7 +143,8 @@ function load (url) {
 }
 
 function change () {
-  var url = prompt("Enter a soundcloud track url", "");
+  var url = localStorage.getItem("soundcloud-track");
+  url = prompt("Enter a soundcloud track url", url);
   if (url) soundcloud(url);
 }
 
@@ -111,9 +157,13 @@ function soundcloud(url) {
       return;
     }
     info.innerHTML = "<a href='"+data.permalink_url+"' target='_blank'>Listening to "+data.title+" by "+data.user.username+"</a>";
+    localStorage.setItem("soundcloud-track", url);
     play(data.id);
   }, function () {
-    alert("This is not a valid soundcloud track url.")
+    alert(url + " is not a valid soundcloud track url.")
   })
 }
 
+if (getParameterByName("reset")){
+  localStorage.removeItem("soundcloud-track");
+} 
