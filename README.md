@@ -2,7 +2,7 @@ clubber
 ========
 
 #### Javascript music analysis library ####
-Clubber is a library that analyzes the frequency data from an audio source and extracts the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggest to be a better segregation for music audio. Several measurements are performed and a small collection of the useful metrics are delivered in a form suitable for use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of visualisations that sync pleasantly with music.
+Clubber is a library that analyzes the frequency data from an audio source and extracts the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggest to be a better segregation for music audio. Several measurements are performed and a small collection of useful metrics are produced in a form suitable for use in webgl shaders, or in any other context. This simple flow provides a powerful framework which enables the rapid development of visualisations that sync pleasantly with music.
 
 [ClubberToy demo](http://wizgrav.github.io/clubber/) - [Rhythm debugger](http://wizgrav.github.io/clubber/debug)
 
@@ -51,25 +51,25 @@ console.log(clubber.notes); // array containing the audio energy per midi note.
 
 The energy per midi note will be contained in the Clubber.notes array. Two mechanisms are provided by the library itself called 'bands' and 'rects'. Both are implemented as closures that when called, will process the current note energies and update a Float32Array of 4 elements. Their output can be passed directly to webgl shaders as vec4s. The data coming from both mechanisms are readily usable as modulators but they can also be aggregated through time for more elaborate transitions etc. 
 
-Both type of processors are defined as rectanglar windows on the midi spectrum using the properties "from" - "to" to declare a range of midi notes to watch and "low" - "high" properties for the respective energy thresholds, expressed as midi velocities (0-127). The two type of objects mainly differ on the output metrics they provide which are always normalized floats(0-1).
+Both type of processors are defined as rectangular windows on the midi spectrum using the properties "from" - "to" to declare a range of midi notes to watch and "low" - "high" properties for the respective energy thresholds, expressed as midi velocities (0-127). The two type of objects mainly differ on the output metrics they provide which are always normalized floats(0-1).
 
 Bands deal mainly with notes and produce these metrics: 
 
 * the strongest note (where the highest energy is) (x)
 * the power weighted average of all notes (y)
 * the power of the strongest note (z)
-* the average energy of all notes (w)
+* the average energy of all active notes (w)
 
-Rects do more straight forward measurements of the midi spectrum and produce: 
+Rects do more straight forward measurements on the midi spectrum and produce: 
 
-* the average bin where activity took place (x)
-* the average bin again, but weighted by power (y)
+* the average midi bin where activity took place (x)
+* the average midi bin again, but weighted by power (y)
 * the ratio of active vs inactive bins in the window (z)
 * the area covered by note power relative to the window size (w)
 
 Note that if a rect would cover just a single octave of midi notes, it's "y" element would be identical to a band's "y" covering the same range. Bands don't really take octaves into acount as it's expected that the developer will separate bass from tremble by defining several bands. Rects provide some insight on bass vs treble within the same window because they count bin indexes normally where as bands mod(%) them with 12 to get notes. 
 
-These two object types provide 8 of the most meaningful metrics as discovered in practice. They are split for convenience(packing them in vec4s). Both types provide exponential smoothing for the values. This is controlled by the "smooth" property when instantiating them. This takes a 4 element array of normalized floats as factors for the smoothing of each respective measurement. A value of 1 means instant change and as it goes down to 0 it smooths more. A negative value for an element activates the snap mode. In this mode when the value rises it gets smoothed by the "snap" property which should normally be fast (default is 0.33 which is pretty fast) but when falling, it instead uses the abs(value) as the factor. This comes in handy for eg kicks which you would want to rise fast but slowly fade down, so you would use something like -0.1 or something like that. There's a single "snap" factor for all elements and it can be overriden in the options.
+These two object types provide 8 of the most meaningful metrics as discovered in practice. They are split for convenience(grouping them in vec4s). Both types provide exponential smoothing for the values which is controlled by the "smooth" option when instantiating them. This takes a 4 element array of normalized floats as factors for the smoothing of each respective measurement. A value of 1 means instant change and as it goes down to 0 it smooths more. A negative value for an element activates the snap mode. In this mode when the energy rises it gets smoothed by the factor define as the "snap" option which should normally be fast (default is 0.33 which is pretty fast) and when falling, it instead uses the abs(value) as the factor. This comes in handy for eg kicks which you would want to rise fast but slowly fade down, so you would use something like -0.1 or something like that. There's a single "snap" factor for all measurements of the object and it can be overriden in the options.
 
 ```javascript
 // clubber here is the instantiated object from above
@@ -92,7 +92,7 @@ var rectArray = band(vec4Object);
 ```
 
 
-The "adapt" option enables an adaptive mode for the low and high thresholds. In this mode the "low" and "high" options become the absolute limits for the thresholds but the actual range adjust within these following the average energy of the band/rect. The option is defined as an array of normalized floats with the 4 following elements:
+The "adapt" option enables the adaptive mode for the low and high thresholds. In this mode the "low" and "high" options become the absolute limits for the thresholds but the actual vertical range of the window constantly adjusts within these limits by following the average energy of the band/rect. The option is defined as an array of normalized floats with the 4 following elements:
 
 * the ratio of max height of the band/rect to set the low threshold below the average energy
 * a smoothing factor for the upper threshold
@@ -119,7 +119,7 @@ You can also tune smoothing via Clubber.smoothing which is a shortcut for the in
 
 ### Rhythm debugger ###
 
-This useful utility is meant to assist in the design of modulators. 4 objects are provided by default and accessed in a shader via the iMusic[0-3] uniforms. The 3 text input fields allow writing glsl oneliners to play with the measurements and inspect the resulting modulations in the form of RGB shapes. The debug button cycles through two extra views, one with all the measurements from the 4 objects and also a midi spectrogram where you can see the bounds for each band/rect(useful for live inspection of the adapt option).
+This useful utility is meant to assist in the design of modulators. 4 objects are provided by default and accessed in a shader via the iMusic[0-3] vec4 uniforms. The 3 text input fields allow writing glsl oneliners to play with the measurements and inspect the resulting modulations in the form of RGB shapes. The debug button cycles through two extra views, one with all the measurements from the 4 objects and also a midi spectrogram where you can see the current bounds for each band/rect(useful for live inspection of the adapt option).
 
 By default all objects are of type "band" but you can change that and all other parameters by passing query arguments to the debugger url. Arguments should be in the form of a single letter and a number 0-3 to indicate iMusic[0-3] respectively. So for example ?t0=rect would override the type of iMusic[0] and turn it into a rect instead. ?r0=1,24,32,96 would change the bounds (from, to, low, high). ?s0=0.2,0.1,0.2,0.2 would override the smooth option array. ?a0=0.33,0.1,1,1 would override the adapt option array. 
 
