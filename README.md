@@ -89,7 +89,9 @@ var bandArray = band(vec4Object); // The internally used Float32Array is also re
 
 var rectArray = band(vec4Object);
 
-``
+```
+
+
 The "adapt" option enables an adaptive mode for the low and high thresholds. In this mode the "low" and "high" options become the absolute limits for the thresholds but the actual range adjust within these following the average energy of the band/rect. The option is defined as an array of normalized floats with the 4 following elements:
 
 * the ratio of max height of the band/rect to set the low threshold below the average energy
@@ -101,7 +103,7 @@ max height would be the high - low options, ie the absolute limits for the thres
 
 The smoothing factors work similarly to the ones for the measurements, including the snap mode.
 
-To get an idea of how it works in practice [click here](http://wizgrav.github.io/clubber/debug/?a1=0.33,0.1,0.33,0.1) and select the spectrum debug mode(click the debug button twice). The green band will be adaptive. Check the rhythm debugger section for details on how to configure and use the utility.
+To get an idea of how it works in practice [click here](http://wizgrav.github.io/clubber/debug/?a1=0.33,0.1,0.33,0.1)  and select the spectrum debug mode(click the debug button twice). The green band will be adaptive. Check the rhythm debugger section for details on how to configure and use the utility.
 
 ### Tips ###
 
