@@ -117,7 +117,7 @@ And since we're dealing with vectors why not just measure their distances or eve
 
 You can also tune smoothing via Clubber.smoothing which is a shortcut for the internal analyser's smoothingTimeConstant(the web audio default is 0.8 but mind that it is quite sensitive).
 
-### Rythm debugger ###
+### Rhythm debugger ###
 
 This useful utility is meant to assist in the design of modulators. 4 objects are provided by default and accessed in a shader via the iMusic[0-3] uniforms. The 3 text input fields allow writing glsl oneliners to play with the measurements and inspect the resulting modulations in the form of RGB shapes. The debug button cycles through two extra views, one with all the measurements from the 4 objects and also a midi spectrogram where you can see the bounds for each band/rect(useful for live inspection of the adapt option).
 
