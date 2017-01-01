@@ -86,15 +86,7 @@ initClubber();
 
 if (getParameterByName("reset")){
   localStorage.removeItem("soundcloud-track");
-  for(var i=0; i<4; i++){
-    localStorage.removeItem("clubber-config-"+i);
-  }
-} else {
-  for(var i=0; i<4; i++){
-    var s = localStorage.getItem("clubber-config-"+i);
-    if(s) initClubber(s);
-  }
-} 
+}
 
 selectBand(0);
 
