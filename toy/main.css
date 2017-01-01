@@ -8,6 +8,7 @@ body {
 }
 #header {
   position:fixed;
+  z-index: 100;
   padding-top:0.33vh;
 }
 audio {
@@ -25,19 +26,20 @@ body, canvas {
 #header #info {
   padding-top:1vh;
   width: 100vw;
-  font-size: 1.8vh;
-  transition: opacity 0.33s;
+  font-size: 0vh;
+  transition: opacity 0.2s, font-size 0.4s;
   overflow: hidden;
   opacity:0;
 }
 
 #header:hover #info {
+  font-size: 1.8vh;
   opacity: 1;
 }
 
 #header #info a {
   text-decoration: none;
-  color: #ccc;
+  color: #eee;
   text-shadow: 1px 1px #666;
 }
 

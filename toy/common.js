@@ -1,4 +1,6 @@
 CLIENT_ID = "56c4f3443da0d6ce6dcb60ba341c4e8d";
+TOY_ID = "rtrtw8";
+
 var info = document.getElementById("info");
  
 var audio = document.querySelector("audio");
@@ -17,7 +19,8 @@ var data = {}, needsCorrection = false;
 var clubber = new Clubber({thresholdFactor:0, size: 4096});
 clubber.listen(audio);
 
-var types = ["band", "band", "band", "band"];
+var templates = ["0123", "0123", "0123", "0123"];
+
 
 var smoothArrays = [
   [0.1,0.1,0.1,0.1],
@@ -40,40 +43,31 @@ var rangeArrays = [
   [64, 96,  64, 128]
 ];
 
-function initClubber () {
-  for(var i=0; i<4; i++){
-    var param = getParameterByName("s"+i);
-    if(param) {
-      var smoothArray = smoothArrays[i];
-      param.split(",").forEach(function(s,i){
-        if( i < smoothArray.length) smoothArray[i] = parseFloat(s);
-      });
-    }
-    param = getParameterByName("r"+i);
-    if(param) {
-      var rangeArray = rangeArrays[i];
-      param.split(",").forEach(function(s,i){
-        if( i < rangeArray.length) rangeArray[i] = parseFloat(s);
-      });
-    }
-    param = getParameterByName("a"+i);
-    if(param) {
-      var adaptArray = adaptArrays[i];
-      param.split(",").forEach(function(s,i){
-        if( i < adaptArray.length) adaptArray[i] = parseFloat(s);
-      });
-    }
-    param = getParameterByName("t"+i);
-    if(param === "rect") {
-      types[i] = "rect";
+function initClubber (query) {
+  for(i=0; i<4; i++){
+    var o = {"s": smoothArrays, "r": rangeArrays, "a": adaptArrays}
+    Object.keys(o).forEach(function (k) {
+      var arrs = o[k];
+      param = getParameterByName(k+i, query);
+      if(param) {
+        var arr = arrs[i];
+        param.split(",").forEach(function(s,i){
+          if( i < arr.length) arr[i] = parseFloat(s);
+        });
+      }
+    });
+    
+    param = getParameterByName("t"+i, query);
+    if(param && param.length > i) {
+      templates[i] = param;
     }
   }
 
   data.bands = [];
   for(var i=0; i<4; i++){
-    data.bands.push( clubber[types[i]]({
+    data.bands.push( clubber.band({
       from: rangeArrays[i][0], to: rangeArrays[i][1], low: rangeArrays[i][2], high: rangeArrays[i][3],
-      smooth: smoothArrays[i], adapt: adaptArrays[i]
+      smooth: smoothArrays[i], adapt: adaptArrays[i], template: templates[i]
     }));
   }
 }
@@ -98,9 +92,9 @@ function maximize () {
   fs.call(el);
 }
 
-function getParameterByName(name) {
+function getParameterByName(name, search) {
   name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(location.search);
+  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(search || location.search);
   return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
@@ -151,7 +145,7 @@ function change () {
 function soundcloud(url) {
   load("//api.soundcloud.com/resolve?url=" + encodeURIComponent(url.split("?")[0]) + "&client_id=" + CLIENT_ID).then(function (text) {
     var data = JSON.parse(text);
-    console.log(data);
+    //console.log(data);
     if (data.kind !== "track"){
       alert( "Please provide a track url, " + data.kind + " urls are not supported.");
       return;
@@ -164,6 +158,14 @@ function soundcloud(url) {
   })
 }
 
-if (getParameterByName("reset")){
-  localStorage.removeItem("soundcloud-track");
-} 
+function shadertoy(url) {
+  url = url.split("?")[0].split("/").pop();
+  return load("//www.shadertoy.com/api/v1/shaders/" + url + "?key="+TOY_ID)
+  .then(function(text){
+    var obj = JSON.parse(text);
+    if(obj.Shader){
+      return obj.Shader.renderpass[0].code;
+    }
+  });
+  
+}

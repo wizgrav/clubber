@@ -1,5 +1,6 @@
 // Shadertoy ids
 var shaderIds = ["4dsGzH","MsjSW3","4tlSzl", "MdlXRS","lslXDn","XsXXDn","MdBSDt","MlXSWX","XsBXWt"];
+templates = ["0234", "0234", "0234", "0234"];
 
 shaderIds.forEach(function (s, i) {
   var p = getParameterByName("sh"+i);
@@ -94,10 +95,24 @@ function attribution(i) {
 }
  
 smoothArrays = [
-  [0.08,0.09,0.09,0.1],
-  [0.08,0.09,0.09,0.1],
-  [0.08,0.09,0.09,0.1],
-  [0.08,0.09,0.09,0.1]
+  [0.08,0.09,0.09,0.09],
+  [0.08,0.09,0.09,0.09],
+  [0.08,0.09,0.09,0.09],
+  [0.08,0.09,0.09,0.09]
+];
+
+adaptArrays = [
+  [1,1,1,1],
+  [1,1,1,1],
+  [1,1,1,1],
+  [0,0.33,1,1]
+];
+
+rangeArrays = [
+  [1, 32, 64, 128],
+  [32, 48, 64, 128],
+  [48, 64, 64, 128],
+  [64, 96,  32, 128]
 ];
 
 initClubber();

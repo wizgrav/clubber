@@ -5,7 +5,20 @@ var Shader = function (renderer, config) {
   this.startTime = 0;
   
   function compile (source) {
-    self.programInfo = twgl.createProgramInfo(self.renderer, [self.vertexShader, [self.fragmentHeader, source, config.correct ? self.fragmentCorrect : self.fragmentMain].join("\n")]);
+    if(!source) {
+      alert("Shader not found");
+      return;
+    }
+    var defines = config.defines || {}, def=[];
+    Object.keys(defines).forEach(function (d) {
+      def.push("#define "+d+" "+defines[d]);
+    });
+    self.programInfo = twgl.createProgramInfo(self.renderer, 
+      [self.vertexShader, [self.fragmentHeader, def.join("\n"), source, config.correct ? self.fragmentCorrect : self.fragmentMain].join("\n")],
+      function(msg, line){
+        alert(msg);
+    });
+    if(config.ondone) config.ondone(self);
   }
   if (config.source instanceof Promise) {
     config.source.then(compile);                                                          
@@ -55,6 +68,9 @@ Shader.prototype.fragmentHeader = [
   "uniform vec4 iMusic[4];",
   "uniform vec3 iMouse;",
   "uniform sampler2D iChannel0;",
+  "uniform sampler2D iChannel1;",
+  "uniform sampler2D iChannel2;",
+  "uniform sampler2D iChannel3;",
   "uniform vec3 iChannelResolution[4];",
 ].join("\n")
 
@@ -64,7 +80,7 @@ Shader.prototype.fragmentMain = [
     " mainImage(color, gl_FragCoord.xy);",
     " const vec3 W = vec3(0.2125, 0.7154, 0.0721);",
     " float l = dot(color.rgb, W);",
-    " color.a = iTransition < 1.0 ? iTransition * clamp(0.2,0.8,l): 1.0;",
+    " color.a = iTransition < 1.0 ? iTransition * clamp(0.2,1.0,l): 1.0;",
     " gl_FragColor = color;",
     "}"
 ].join("\n");

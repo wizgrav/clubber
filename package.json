@@ -1,10 +1,15 @@
 {
   "name": "clubber",
-  "version": "1.3.0",
-  "description": "Realtime music analysis for audio reactive visualizations.",
+  "version": "1.4.0",
+  "description": "Realtime music analysis for audio reactive visualizations",
   "main": "./index.js",
+  "local-web-server": {
+    "port": 8100,
+    "forbid": "*.json"
+  },
   "scripts": {
-    "dist": "webpack index.js dist/clubber.js && uglifyjs dist/clubber.js -o dist/clubber.min.js --source-map dist/clubber.min.js.map"
+    "dist": "webpack index.js dist/clubber.js && uglifyjs dist/clubber.js -o dist/clubber.min.js --source-map dist/clubber.min.js.map",
+    "server":"ws --https"
   },
   "repository": {
     "type": "git",
@@ -18,10 +23,16 @@
     "octave",
     "audio",
     "analysis",
+    "kick",
+    "bass",
     "midi",
     "key",
     "note",
+    "webgl",
+    "vector",
+    "shader",
     "analyzer",
+    "analyser",
     "rhythm",
     "reactive",
     "visualisation"
@@ -34,6 +45,7 @@
   "homepage": "https://github.com/wizgrav/clubber#readme",
   "devDependencies": {
     "webpack": "^1.13.0",
-    "uglifyjs": "^2.4.10"
+    "uglifyjs": "^2.4.10",
+    "local-web-server": "^1.2.6"
   }
 }
