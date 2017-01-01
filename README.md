@@ -122,13 +122,13 @@ You can also tune smoothing via Clubber.smoothing which is a shortcut for the in
 
 ### Clubber Tool ###
 
-This web app is meant to assist in the design of modulators. 4 objects are provided by default and accessed in a shader via the iMusic[0-3] vec4 uniforms(bands). The 3 text input fields allow writing glsl expressions to play with the measurements and inspect the resulting modulations in the form of RGB shapes. The views button cycles through two extra views, one with all the measurements from the 4 objects and also a midi spectrogram where you can see the current bounds for each band/rect(useful for live inspection of the adapt option).
+This web app is meant to assist in the design of modulators. 4 objects are provided by default and accessed in a shader via the iMusic[0-3] vec4 uniforms(bands). The 4 text input fields allow writing glsl expressions to play with the measurements and inspect the resulting modulations in the form of RGBA shapes(A is white). The views button cycles through two extra views, one with all the measurements from the 4 objects and also a midi spectrogram where you can see the current bounds for each band/rect(useful for live inspection of the adapt option).
 
-You can change band configuration through the form or by passing query arguments to the tool url. Arguments should be in the form of a single letter and a number 0-3 to indicate iMusic[0-3] respectively. So for example ?t0=4567 would override the template of iMusic[0]. ?r0=1,24,32,96 would change the bounds (from, to, low, high). ?s0=0.2,0.1,0.2,0.2 would override the smooth option array. ?a0=0.33,0.1,1,1 would override the adapt option array.
+You can change band configuration through the form with the numeric inputs or by passing query arguments to the tool url. Arguments should be in the form of a single letter and a number 0-3 to indicate iMusic[0-3] respectively. So for example ?t0=4567 would override the template of iMusic[0]. ?r0=1,24,32,96 would change the bounds (from, to, low, high). ?s0=0.2,0.1,0.2,0.2 would override the smooth option array. ?a0=0.33,0.1,1,1 would override the adapt option array.
 
-The current soundcloud track, glsl field values and band config will be persisted among page reloads. If you want to reset to the defaults you can pass a **?reset=1** argument to the url.
+The current soundcloud track, glsl field values and band config will be persisted among page reloads in localStorage. If you want to reset to the defaults you can pass a **?reset=1** argument to the url.
 
-If a shadertoy hash/url is provided, it will be fetched and rendered as well, potentially interacting with modulators as well. Not all shadertoys work yet and those that do must have a special define block to allow band wiring:
+If a shadertoy hash/url is provided, it will be fetched and rendered, and it can be made to interact with modulators as well. Not all shadertoys work yet and those that do must have a special define block to allow wiring the mods in:
 
 ```cpp
 
@@ -143,9 +143,9 @@ const float iTransition = 1.0;
 
 ```
 
-When in the context of clubber, The CLUBBER_X defines will have the expressions from the tool's fields. These must evaluate to a single float each, ideally 0-1. In the shadertoy editor, you can place these in the shader wherever they make sense as modulators. In the original shader you should make sure that whenever the define is placed, it gets scaled to the desired range from 0-1 and place some appropriate defaults in the CLUBBER_X defines on the shader to make it look how you want when in the static shadertoy context,
+When in the context of clubber, The CLUBBER_X defines will have the expressions from the tool's fields. These must evaluate to a single float each, ideally 0-1. In the shadertoy editor, you can place these in the shader wherever they make sense as modulators. In the original shader you should make sure that whenever the define is placed, it gets scaled to the desired range from 0-1 and place some appropriate defaults in the CLUBBER_X defines on the shader text.
 
-At any point you can copy the address of the **State** link to get a full snapshot of the current state of the tool contained in a long url. Band configs, glsl snippets, current track and shader are all included in the state so this url is essentially a self contained music visualization that can be easily stored and shared. A browser short urling extension would come very handy here.
+At any point, you can copy the address of the **State** link to get a full snapshot of the current state of the tool contained in a long url. Band configs, glsl snippets, current track and shader are all included in the state so this url is essentially a self contained music visualization that can be easily stored and shared. A browser short urling extension would come very handy here.
 
 ### Clubber in the wild ###
 

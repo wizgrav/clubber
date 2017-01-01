@@ -186,6 +186,10 @@ function stateLink(el){
   el.href = window.location.origin+window.location.pathname+"?"+genState();
 }
 
+function sourceLink(el){
+  el.href = "//www.shadertoy.com/view/" + ALT.split("?")[0].split("/").pop();
+}
+
 function genState() {
   var a = ["tool=1"];
   for(var i=0;i<4;i++){
