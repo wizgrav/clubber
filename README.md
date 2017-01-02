@@ -60,10 +60,10 @@ The output can be customized with the **template** property. This accepts a stri
 * ID - Description
 * 
 * 0 - Strongest power note index
-* 1 - Power weighted note average
-* 2 - Power of the strongest note
-* 3 - Average energy of active notes
-* 4 - Weakest power note index
+* 1 - Weakest power note index
+* 2 - Power weighted note average
+* 3 - Power of the strongest note
+* 4 - Average energy of active notes
 * 5 - Power weighted average midi index
 * 6 - Power weighted average octave index 
 * 7 - Ratio of spectrum window area covered
