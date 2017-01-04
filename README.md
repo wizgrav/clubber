@@ -1,12 +1,15 @@
 clubber
 ========
 
-#### Javascript music analysis library ####
-Clubber is a library that analyzes the frequency data from an audio source and extracts the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggest to be a better segregation for music audio. Several measurements are performed and a small collection of useful metrics are produced in a form suitable for use in webgl shaders, or in any other context. This simple flow provides a powerful framework for the rapid development of visualisations that react pleasantly to the audio.
+A javascript library that analyzes the frequency data from an audio source and extracts the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggests to be a better segregation for music audio. Several measurements are performed and a small collection of useful metrics are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of visualisations that react pleasantly to the audio.
 
 [ClubberToy](http://wizgrav.github.io/clubber/) - A collection of several rewired shadertoys as a vjing tool. 
 
-[Clubber Tool](http://wizgrav.github.io/clubber/tool) - Your true friend in this crazy world. Refer to it's section.
+[Clubber Tool](http://wizgrav.github.io/clubber/tool) - Make awesome audio reactive visualizations on the spot. 
+
+Some example patches made with the tool: 
+
+[Sea, Sun & Zorba](https://goo.gl/7tDFmr), [Cubes & Roses](https://goo.gl/411PTg)
 
 ### Usage ###
 
@@ -60,7 +63,7 @@ The output can be customized with the **template** property. This accepts a stri
 * ID - Description
 * 
 * 0 - Strongest power note index
-* 1 - Weakest power note index
+* 1 - Weakest powered note index
 * 2 - Power weighted note average
 * 3 - Power of the strongest note
 * 4 - Average energy of active notes
@@ -122,7 +125,7 @@ You can also tune smoothing via Clubber.smoothing which is a shortcut for the in
 
 ### Clubber Tool ###
 
-This web app is meant to assist in the design of modulators. 4 objects are provided by default and accessed in a shader via the iMusic[0-3] vec4 uniforms(bands). The 4 text input fields allow writing glsl expressions to play with the measurements and inspect the resulting modulations in the form of RGBA shapes(A is white). The views button cycles through two extra views, one with all the measurements from the 4 objects and also a midi spectrogram where you can see the current bounds for each band/rect(useful for live inspection of the adapt option).
+This web app is meant to assist in the design of modulators. 4 bands are provided by default and accessed in a shader via the iMusic[0-3] vec4 uniforms. The 4 text input fields allow writing glsl expressions to play with the measurements and inspect the resulting modulations in the form of RGBA shapes(A is white). The views button cycles through two extra views, one with all the measurements from the 4 objects and also a midi spectrogram where you can see the current bounds for each band/rect(useful for live inspection of the adapt option).
 
 You can change band configuration through the form with the numeric inputs or by passing query arguments to the tool url. Arguments should be in the form of a single letter and a number 0-3 to indicate iMusic[0-3] respectively. So for example ?t0=4567 would override the template of iMusic[0]. ?r0=1,24,32,96 would change the bounds (from, to, low, high). ?s0=0.2,0.1,0.2,0.2 would override the smooth option array. ?a0=0.33,0.1,1,1 would override the adapt option array.
 
@@ -143,9 +146,9 @@ const float iTransition = 1.0;
 
 ```
 
-When in the context of clubber, The CLUBBER_X defines will have the expressions from the tool's fields. These must evaluate to a single float each, ideally 0-1. In the shadertoy editor, you can place these in the shader wherever they make sense as modulators. In the original shader you should make sure that whenever the define is placed, it gets scaled to the desired range from 0-1 and place some appropriate defaults in the CLUBBER_X defines on the shader text.
+When in the context of clubber, The CLUBBER_X defines will have the expressions from the tool's fields. These must evaluate to a single float each, ideally 0-1. In the shadertoy editor, you can place these in the shader wherever they make sense as modulators and place some appropriate defaults in the CLUBBER_X defines on the shader text.
 
-At any point, you can copy the address of the **State** link to get a full snapshot of the current state of the tool contained in a long url. Band configs, glsl snippets, current track and shader are all included in the state so this url is essentially a self contained music visualization that can be easily stored and shared. A browser short urling extension would come very handy here.
+At any point, you can copy the address of the **State** link to get a full snapshot of the current state of the tool contained in a long url. Band configs, glsl snippets, current track and shader are all serialized so this url is essentially a self contained music vis patch that can be easily stored and shared.
 
 ### Clubber in the wild ###
 

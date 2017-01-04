@@ -22,7 +22,7 @@ function changeTemplate(el) {
   var t = templates[bandIndex];
   var a = ["Change data types for iMusic[" + bandIndex + "] vec4. String of indices. Available indices:\n"];
   DESCRIPTIONS.forEach(function (k,i){
-    a.push(i + (t.match(i) ? " * " : " - ") + k);
+    a.push(i + (t.match(i) ? " * " : "   ") + k);
   });
   var s = prompt(a.join("\n"),t);
   if(!s ) return;
