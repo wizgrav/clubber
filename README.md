@@ -7,9 +7,9 @@ A javascript library that analyzes the frequency data from an audio source and e
 
 [Clubber Tool](http://wizgrav.github.io/clubber/tool) - Make awesome audio reactive visualizations on the spot. 
 
-Some example patches made with the tool: 
+Example patches made with the tool: 
 
-[Sea, Sun & Zorba](https://goo.gl/7tDFmr), [Cubes & Roses](https://goo.gl/411PTg)
+[Sea, Sun & Zorba](https://goo.gl/7tDFmr), [Cubes & Roses](https://goo.gl/411PTg), [Electro Fractal Land](https://goo.gl/9yBZnJ), [Bello Electro](https://goo.gl/VTGmz7)
 
 ### Usage ###
 

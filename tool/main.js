@@ -20,7 +20,7 @@ var bandIndex = 0;
 
 function changeTemplate(el) {
   var t = templates[bandIndex];
-  var a = ["Change data types for iMusic[" + bandIndex + "] vec4. String of indices. Available indices:\n"];
+  var a = ["Change data types for iMusic[" + bandIndex + "] vec4. Pack of single digit indices. Available indices:\n"];
   DESCRIPTIONS.forEach(function (k,i){
     a.push(i + (t.match(i) ? " * " : "   ") + k);
   });
@@ -134,10 +134,24 @@ var ALT = null;
 var ALTEXT = null;
 var renderMods = true;
 
+var defaultShaders = {
+  "Fractal land by Kali": "https://www.shadertoy.com/view/ltyXR1",
+  "Seascape by TDM": "https://www.shadertoy.com/view/4lKSzh",
+  "Cypher by dila": "https://www.shadertoy.com/view/MlGSzW",
+  "Bello by wizgrav": "https://www.shadertoy.com/view/MtGSWz",
+};
+
 function loadShader(s) {
-  s = s || prompt("Provide a shadertoy url.", ALT ? ALT: "");
+  var texts = [], shaders=[];
+  Object.keys(defaultShaders).forEach(function(k,i){
+    texts.push(i + " " + k);
+    shaders.push(defaultShaders[k]);
+  });
+  s = s || prompt("Provide a shadertoy url or  single digit to select from the defaults:\n\n"+texts.join("\n"), ALT ? ALT: "");
   if(!s) return;
-  shadertoy(s).then(function(t){ ALT=s; ALTEXT=t; reloadAll(); });
+  var si = parseInt(s);
+  s = shaders[si] ? shaders[si]:s;
+  shadertoy(s).then(function(t){ ALT=s; ALTEXT=t; reloadAll(); RATIO=4;});
 }
 
 if(getParameterByName("shader")){
@@ -179,6 +193,7 @@ function stateLink(el){
 }
 
 function sourceLink(el){
+  if(!ALT) return;
   el.href = "//www.shadertoy.com/view/" + ALT.split("?")[0].split("/").pop();
 }
 
@@ -248,12 +263,7 @@ function reload (alt) {
     "void mainImage(out vec4 color, vec2 fragCoord) {",
     " vec2 uv = fragCoord/iResolution.xy;",
     " vec4 fColor = vec4(0.);",
-    " vec4 fields;",
-    " fields.r = CLUBBER_R;",
-    " fields.g = CLUBBER_G;",
-    " fields.b = CLUBBER_B;",
-    " fields.a = CLUBBER_A;",
-    " fields *= 0.25;",
+    " vec4 fields = vec4(CLUBBER_R, CLUBBER_G, CLUBBER_B, CLUBBER_A) * 0.25;",
     " for(float i = 0.; i < 2.; i++) {",
     "   for(float j = 0.; j < 2.; j++) {",
     "     vec2 center = 0.25 + vec2(mod(i, 2.0), 1.0 - mod(j,2.0)) * 0.5;",
@@ -266,7 +276,7 @@ function reload (alt) {
     "   }",
     " }",
     " color.rgb = fColor.a > 0. ? vec3(fColor.a):  fColor.rgb;",
-    " if(color.r + color.g + color.b > 0.) color.rgb += 0.33;",
+    " if(color.r + color.g + color.b > 0.) color.rgb += 0.25;",
     "}"
   ].join("\n");
   
@@ -330,6 +340,27 @@ window.addEventListener("keydown", function (e){
   }
 });
 
+var RATIO = 4;
+var count = 0;
+var lastRatio = 0;
+
+function resizeCanvasToDisplaySize(canvas, time) {
+  if(++count % 30 == 0 && RATIO > 1){
+    if(lastRatio && time - lastRatio < 666){ RATIO--; }
+    lastRatio = time;
+  }
+  multiplier = RATIO > 0 ? 1/RATIO : 1;
+  var width  = canvas.clientWidth  * multiplier | 0;
+  var height = canvas.clientHeight * multiplier | 0;
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
+    return true;
+  }
+  return false;
+}
+
+window.addEventListener("resize", function () { RATIO=4; });
 
 function  render(time) {
   currentTime = time;
@@ -343,12 +374,14 @@ function  render(time) {
     uniforms.iBounds[4 * i + 2] = obj.low / 128;
     uniforms.iBounds[4 * i + 3] = obj.high / 128;
   }
-  uniforms.iResolution = [gl.canvas.width, gl.canvas.height,0];
   twgl.setTextureFromArray(gl, uniforms.iNotes, clubber.notes, noteTexOptions);
   data.time = time/1000;
   gl.clear(gl.COLOR_BUFFER_BIT);
-  twgl.resizeCanvasToDisplaySize(gl.canvas);
+  resizeCanvasToDisplaySize(gl.canvas, time);
+  
+  uniforms.iResolution = [gl.canvas.width, gl.canvas.height,0];
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  
   shaders[0].transition = altShader ? 0.8 : 1;
   if(altShader) altShader.transition = renderMods || debugMode ? 0.4 : 1;
   if(debugMode) {

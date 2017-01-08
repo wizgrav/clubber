@@ -259,8 +259,8 @@
 	    var height = rect.high - rect.low, _height = config.high - config.low, area = width * height;
 	    var ah = Math.min(config.high, config.low + av + config.adapt[2] * _height);
 	    var al = Math.max(config.low, config.low + av - config.adapt[0] * _height);
-	    var of = Math.floor(config.from / 12), ot = Math.ceil(config.to / 12);
-	    val = height ? Math.min(rect.high, val - rect.low) / height : 0;
+	    var of = Math.floor(config.from / 12), ot = Math.floor(config.to / 12);
+	    val = height ? Math.min(rect.high, Math.max(0, val - rect.low)) / height : 0;
 	    
 	    // fixed timestep
 	    if (obj.time === undefined) obj.time = scope.time;

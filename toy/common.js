@@ -112,7 +112,7 @@ function play (src, dropped) {
   audio.play();
 }
 
-function load (url) {
+function load (url, cb) {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url);
@@ -124,6 +124,9 @@ function load (url) {
           status: this.status,
           statusText: xhr.statusText
         });
+      }
+      if(cb) {
+        cb(this.status);
       }
     };
     xhr.onerror = function () {
@@ -142,6 +145,18 @@ function change () {
   if (url) soundcloud(url);
 }
 
+
+audio.onerror = function () {
+  console.log(audio.currentSrc);
+  
+  alert(
+    audio.currentSrc.match("blob:")  ?
+    "Bad audio file"
+    :  
+    "Soundcloud API limit reached, you could try again later.\nYou can also drop your own audio files in the page.\n\n"
+  );
+        
+}
 function soundcloud(url) {
   load("//api.soundcloud.com/resolve?url=" + encodeURIComponent(url.split("?")[0]) + "&client_id=" + CLIENT_ID).then(function (text) {
     var data = JSON.parse(text);
