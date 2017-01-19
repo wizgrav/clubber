@@ -54,7 +54,7 @@ clubber.update(currentTime); // currentTime is optional and specified in ms.
 console.log(clubber.notes); // array containing the audio energy per midi note.
 ```
 
-The energy per midi note will be contained in the Clubber.notes array. A mechanism for analysis is provided by the library called 'bands'. These are implemented as closures that, when called, will process the current note energies and update Float32Arrays | Arrays | THREE.VectorX objects. Their output data can be passed directly to webgl shaders as vecs. The data coming from both mechanisms are readily usable as modulators but they can also be aggregated through time for more elaborate transitions etc. 
+The energy per midi note will be contained in the Clubber.notes array. A mechanism for analysis is provided by the library called 'bands'. These are implemented as closures that, when called, will process the current note energies and update Float32Arrays | Arrays | THREE.VectorX objects passed as the first argument, with the second argument being an offset for the case when arrays are used. Their output data can be passed directly to webgl shaders as vecs. The data coming out are readily usable as modulators but they can also be aggregated through time for more elaborate transitions etc. 
 
 Bands are defined as rectangular windows on the midi spectrum using the properties **from** - **to** to declare a horizontal range of midi notes(0-127) to watch and **low** - **high** properties for the vertical power thresholds within that window, expressed as midi velocities (0-127). The output measurements are always normalized floats(0-1).
 
