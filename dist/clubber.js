@@ -45,8 +45,8 @@
 /***/ function(module, exports) {
 
 	/* 
-	* clubber.js 1.4.0 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
-	* Available via the MIT license. Go to http://github.com/wizgrav/clubber for more.
+	* clubber.js 1.4.2 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
+	* Available via the MIT license. Check http://github.com/wizgrav/clubber for info.
 	*/
 
 	var Clubber = function (config) {
@@ -73,57 +73,19 @@
 	  
 	  this.data = new Uint8Array(this.bufferLength);
 	  this.keys = new Uint8Array(this.bufferLength);
-	  this.noteSums = new Uint16Array(160);
-	  this.notes = new Uint8Array(160);
-	  this.weights = new Uint8Array(160);
+	  this.noteSums = new Uint16Array(128);
+	  this.notes = new Uint8Array(128);
+	  this.weights = new Uint8Array(128);
 	  
-	  function freq2midi (freq){
-	    var r=1.05946309436, lala=523.251, notetest=eval(freq), ref=lala, hauteur=1, octave=4, alteration, supinf=0, compteur=0, hautnb=1, noteton, ref1=0, ref2=0, temp, flag=0, nmidi=72;
-	    tableau=new Array();
-	    while (notetest<ref){
-	        ref=Math.floor(1000*ref/r)/1000;
-	        compteur=compteur+1;
-	        supinf=-1;
-	        flag=1;
-	        ref1=ref;
-	    }	
-	    while (notetest>ref){
-	        ref=Math.floor(1000*ref*r)/1000;
-	        compteur=compteur-1;
-	        supinf=1;
-	        ref2=ref;
-	    }
-	    if (Math.abs(notetest-ref1)<Math.abs(notetest-ref2)) {
-	      supinf=-1;
-	      compteur=compteur+1;
-	    } else {
-	      if (flag==1){ supinf=-1;}
-	    }
-	    if (ref1==0) {
-	      ref1=Math.floor(1000*ref/r)/1000;
-	      if (Math.abs(notetest-ref1)<Math.abs(notetest-ref2)) {
-	        compteur=compteur+1;
-	        supinf=1;
-	      }
-	    }
-	    compteur=Math.abs(compteur);
-	    while (compteur != 0 ){
-	        if ((hautnb==1 && supinf==-1) || (hautnb==12 && supinf==1) ) {
-	          octave=octave+eval(supinf);
-	          if (supinf==1) hautnb=0;
-	          if (supinf==-1) hautnb=13;
-	        }
-	        hautnb=hautnb+supinf;
-	        nmidi=nmidi+supinf;
-	        compteur=compteur-1;
-	    }
-	    return Math.min(nmidi,160);
-	  }
-	  
+	  this.maxBin = 0;
 	  var lastkey=0,idx=0;
 	  for(var i = 0, inc=(this.audioCtx.sampleRate/2)/this.bufferLength; i < this.bufferLength;i++){
 	    var freq = (i+0.5)*inc;
-	    var key = freq2midi(freq);
+	    this.maxBin = i;
+	    if(freq > 13280) {
+	      break;
+	    }
+	    var key = Math.floor(17.3123405046 * Math.log(.12231220585 * freq));
 	    this.keys[i] = key;
 	    this.weights[key]++;
 	  }
@@ -310,7 +272,7 @@
 	  for(var i = 0; i < this.notes.length; i++){
 	    this.noteSums[i] = 0;
 	  }
-	  for(i = 0; i < this.keys.length; i++){
+	  for(i = 0; i < this.maxBin; i++){
 	    this.noteSums[this.keys[i]] += data[i];
 	  }
 	  

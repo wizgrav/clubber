@@ -1,6 +1,6 @@
 {
   "name": "clubber",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Realtime music analysis for audio reactive visualizations",
   "main": "./index.js",
   "local-web-server": {

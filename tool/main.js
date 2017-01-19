@@ -346,7 +346,7 @@ var lastRatio = 0;
 
 function resizeCanvasToDisplaySize(canvas, time) {
   if(++count % 30 == 0 && RATIO > 1){
-    if(lastRatio && time - lastRatio < 666){ RATIO--; }
+    if(lastRatio && time - lastRatio < 550){ RATIO *= 0.8; RATIO=Math.max(1,Math.floor(RATIO * 10) / 10); }
     lastRatio = time;
   }
   multiplier = RATIO > 0 ? 1/RATIO : 1;
