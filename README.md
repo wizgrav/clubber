@@ -11,6 +11,10 @@ Example patches made with the tool:
 
 [Sea, Sun & Zorba](https://goo.gl/7tDFmr), [Cubes & Roses](https://goo.gl/411PTg), [Electro Fractal Land](https://goo.gl/9yBZnJ), [Bello Electro](https://goo.gl/VTGmz7)
 
+
+[Clubberize](https://github.com/wizgrav/clubberize) - A helper lib to utilize the tool's modulators in js apps, webgl or other.
+
+
 ### Usage ###
 
 ### Downloads
@@ -150,6 +154,7 @@ When in the context of clubber, The CLUBBER_X defines will have the expressions 
 
 At any point, you can copy the address of the **State** link to get a full snapshot of the current state of the tool contained in a long url. Band configs, glsl snippets, current track and shader are all serialized so this url is essentially a self contained music vis patch that can be easily stored and shared.
 
+if you'd like to use the modulators you designed in your own js apps, webgl or other, check [Clubberize](https://github.com/wizgrav/clubberize) 
 ### Clubber in the wild ###
 
 [Waveform demo by spleen](https://github.com/spleennooname/webg-clubber-demo) 
