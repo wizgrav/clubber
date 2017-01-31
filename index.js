@@ -5,7 +5,7 @@
 
 var Clubber = function (config) {
   if (!config) config = {};
-  this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  this.audioCtx = config.context || new (window.AudioContext || window.webkitAudioContext)();
   
   var analyser = this.audioCtx.createAnalyser();
   analyser.fftSize = config.size || 2048;
