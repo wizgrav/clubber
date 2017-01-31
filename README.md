@@ -1,7 +1,7 @@
 clubber
 ========
 
-A javascript library that analyzes the frequency data from an audio source and extracts the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggests to be a better segregation for music audio. Several measurements are performed and a small collection of useful metrics are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of visualisations that react pleasantly to the audio.
+A javascript library to analyze the frequency data from audio sources and extract the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggests to be a better segregation for music audio. A small collection of meaningful measurements are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of visualisations that react pleasantly to the audio.
 
 [ClubberToy](http://wizgrav.github.io/clubber/) - A collection of several rewired shadertoys as a vjing tool. 
 
@@ -77,11 +77,11 @@ The output can be customized with the **template** property. This accepts a stri
 * 8 - Adaptive low threshold relative to absolute limits 
 * 9 - Adaptive high threshold relative to absolute limits
 
-If a **template** is not specified it defaults is **0123**, the first four measurements from the collection. The length of the string | array provided to template defines the size of the resulting vector and the internally used Float32Array. 
+If a **template** is not specified it defaults is **0123**, the first four measurements from the collection. The length of the string | array provided as the template defines the size of the resulting vector and the internally used Float32Array.
 
-Bands also provide exponential smoothing for their output values which is controlled by the **smooth** option. This takes a 4 element array of normalized floats as factors for the smoothing of each respective measurement. A value of 1 means instant change and as it goes down to 0 it smooths more. 
+Bands also provide exponential smoothing for the measurements which is controlled by the **smooth** option. This takes an element array of normalized floats, same length as the template property, to use as factors for the smoothing of each respective measurement. A value of 1 means instant change and as it goes down to 0 it smooths more. 
 
-A negative value for an element activates the snap mode. In this mode when the energy rises it gets smoothed by the factor define as the **snap** option which should normally be fast (default is 0.33 which is pretty fast) and when falling, it instead uses the abs(value) as the factor. This comes in handy for eg kicks which you would want to rise fast but slowly fade down, so you would use something like -0.1 or something like that. There's a single **snap** factor for all measurements of the object and it can be overriden in the options.
+A negative value for an element activates the snap mode. In this mode when the energy rises it gets smoothed by the factor defined as the **snap** option which should normally be fast (default is 0.33 which is pretty fast) and when falling, it instead uses the abs(value) as the factor. This comes in handy for eg kicks which you would want to rise fast but slowly fade down, so you would use something like -0.1 or something like that. There's a single **snap** factor for all measurements of the object and it can be overriden in the options.
 
 ```javascript
 var band = clubber.band({ // clubber here is the instantiated object from above

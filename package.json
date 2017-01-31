@@ -1,7 +1,7 @@
 {
   "name": "clubber",
-  "version": "1.4.2",
-  "description": "Realtime music analysis for audio reactive visualizations",
+  "version": "1.4.3",
+  "description": "Application of music theory in audio reactive visualizations",
   "main": "./index.js",
   "local-web-server": {
     "port": 8100,

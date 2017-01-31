@@ -45,7 +45,7 @@
 /***/ function(module, exports) {
 
 	/* 
-	* clubber.js 1.4.2 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
+	* clubber.js 1.4.3 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
 	* Available via the MIT license. Check http://github.com/wizgrav/clubber for info.
 	*/
 
@@ -212,6 +212,7 @@
 	    // Exponential smoothing. When negative: snap is used when value rises and abs(value) when falling.
 	    function smoothFn (v, o, f, snap){
 	      v = !v ? 0 : v;
+	      f = f === undefined ? 0.1 : f;
 	      f = Math.min(f, snap);
 	      if (f < 0) { f = v > o ? Math.abs(snap) : -f; }
 	      return f * v + (1 - f) * o;

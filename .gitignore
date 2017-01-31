@@ -1,5 +1,6 @@
 .DS_Store
 .cache
+.vscode
 *.swp
 build
 gh-pages/
