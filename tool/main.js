@@ -135,6 +135,7 @@ var ALTEXT = null;
 var renderMods = true;
 
 var defaultShaders = {
+  "Generators by Kali": "https://www.shadertoy.com/view/XtySDy",
   "Fractal land by Kali": "https://www.shadertoy.com/view/ltyXR1",
   "Seascape by TDM": "https://www.shadertoy.com/view/4lKSzh",
   "Cypher by dila": "https://www.shadertoy.com/view/MlGSzW",

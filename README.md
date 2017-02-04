@@ -9,7 +9,7 @@ A javascript library to analyze the frequency data from audio sources and extrac
 
 Example patches made with the tool: 
 
-[Sea, Sun & Zorba](https://goo.gl/7tDFmr), [Cubes & Roses](https://goo.gl/411PTg), [Electro Fractal Land](https://goo.gl/9yBZnJ), [Bello Electro](https://goo.gl/VTGmz7)
+[Sea, Sun & Zorba](https://goo.gl/7tDFmr), [Cubes & Roses](https://goo.gl/411PTg), [Electro Fractal Land](https://goo.gl/9yBZnJ), [Bello Electro](https://goo.gl/VTGmz7), [Boom Generators](https://goo.gl/XH88Gf)
 
 
 [Clubberize](https://github.com/wizgrav/clubberize) - A helper lib to utilize the tool's modulators in js apps, webgl or other.
