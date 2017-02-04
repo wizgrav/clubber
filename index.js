@@ -5,9 +5,9 @@
 
 var Clubber = function (config) {
   if (!config) config = {};
-  this.audioCtx = config.context || new (window.AudioContext || window.webkitAudioContext)();
+  this.context = config.context || new (window.AudioContext || window.webkitAudioContext)();
   
-  var analyser = this.audioCtx.createAnalyser();
+  var analyser = this.context.createAnalyser();
   analyser.fftSize = config.size || 2048;
   
   Object.defineProperty(this, 'smoothing', {
@@ -23,7 +23,7 @@ var Clubber = function (config) {
   
   this.bufferLength = this.analyser.frequencyBinCount;
   
-  if (!config.mute) this.analyser.connect(this.audioCtx.destination);
+  if (!config.mute) this.analyser.connect(this.context.destination);
   
   this.data = new Uint8Array(this.bufferLength);
   this.keys = new Uint8Array(this.bufferLength);
@@ -33,7 +33,7 @@ var Clubber = function (config) {
   
   this.maxBin = 0;
   var lastkey=0,idx=0;
-  for(var i = 0, inc=(this.audioCtx.sampleRate/2)/this.bufferLength; i < this.bufferLength;i++){
+  for(var i = 0, inc=(this.context.sampleRate/2)/this.bufferLength; i < this.bufferLength;i++){
     var freq = (i+0.5)*inc;
     this.maxBin = i;
     if(freq > 13280) {
@@ -57,7 +57,7 @@ Clubber.prototype.listen = function (obj) {
     this.source = obj;
   } else {
     this.el = obj;
-    this.source = this.audioCtx.createMediaElementSource(obj);
+    this.source = this.context.createMediaElementSource(obj);
   }
   this.source.connect(this.analyser);
 };
