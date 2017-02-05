@@ -1,6 +1,6 @@
 {
   "name": "clubber",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Application of music theory in audio reactive visualizations",
   "main": "./index.js",
   "local-web-server": {
@@ -37,7 +37,11 @@
     "reactive",
     "visualisation"
   ],
-  "author": "Yannis Gravezas",
+  "author": "Yannis Gravezas <wizgrav@gmail.com>",
+  "contributors":[
+    "Neri Barnini <neri.barnini@gmail.com>",
+    "Fabien Motte <hello@fabienmotte.com>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/wizgrav/clubber/issues"

@@ -3,6 +3,8 @@ clubber
 
 A javascript library to analyze the frequency data from audio sources and extract the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggests to be a better segregation for music audio. A small collection of meaningful measurements are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of visualisations that react pleasantly to the audio.
 
+[A short introduction to the music vectorization technique on Medium.com](https://medium.com/@wizgrav/music-reactive-visualizations-924df006f2ae#.6z10i27c1)
+
 [ClubberToy](http://wizgrav.github.io/clubber/) - A collection of several rewired shadertoys as a vjing tool. 
 
 [Clubber Tool](http://wizgrav.github.io/clubber/tool) - Make awesome audio reactive visualizations on the spot. 
@@ -165,6 +167,11 @@ if you'd like to use the modulators you designed in your own js apps, webgl or o
 
 [Dancing Torus by jiin - wizgrav's remix](https://wizgrav.github.io/dancing-torus)
 
+## Contributors
+
+Neri Barnini [<neri.barnini@gmail.com>](mailto:neri.barnini@gmail.com)
+
+Fabien Motte [<hello@fabienmotte.com>](mailto:hello@fabienmotte.com)
 
 ## License
 
