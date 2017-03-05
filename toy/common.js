@@ -16,7 +16,7 @@ gl.clearColor(0, 0, 0, 1);
 var lastObjectUrl = null;
 var data = {}, needsCorrection = false;
 
-var clubber = new Clubber({thresholdFactor:0, size: 4096});
+var clubber = new Clubber({thresholdFactor:0, size: 2048});
 clubber.listen(audio);
 
 var templates = ["0123", "0123", "0123", "0123"];
