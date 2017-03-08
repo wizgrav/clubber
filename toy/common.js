@@ -14,9 +14,14 @@ gl.enable(gl.BLEND);
 gl.clearColor(0, 0, 0, 1);
 
 var lastObjectUrl = null;
-var data = {}, needsCorrection = false;
+var data = {}, needsCorrection = false, clubber;
 
-var clubber = new Clubber({thresholdFactor:0, size: 2048});
+try {
+  clubber = new Clubber({thresholdFactor:0, size: 4096});
+} catch(exc) {
+  console.warn("Can't handle 4096 for fft size, degrading to 2048");
+  clubber = new Clubber({thresholdFactor:0, size: 2048});
+}
 clubber.listen(audio);
 
 var templates = ["0123", "0123", "0123", "0123"];
