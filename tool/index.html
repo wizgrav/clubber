@@ -108,11 +108,6 @@
             color: rgb(32, 32, 32);
           }
           
-          button.disabled {
-            background-color: #000;
-            color: white;
-            opacity:0.66;
-          }
           #octaves {
             position: relative;
             display: none;
@@ -198,7 +193,8 @@
         <button id="mods" onclick="toggleMods(this)">2 mods</button>
         <button onclick="maximize()">3 full</button>
         <button onclick="change()" >4 track</button>
-        <button onclick="loadShader()">5 shader</button>&nbsp;
+        <button onclick="loadShader()">5 shader</button>
+        <button onclick="toggleRepeat(this)" class="disabled">6 loop</button>&nbsp;
         </div>
         <a style="color: rgb(220, 220, 255);" id="source" onmouseenter="sourceLink(this)" href="" target="_blank"
           title="Go to the shader's source on ShaderToy.">Source&nbsp;</a>

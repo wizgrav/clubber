@@ -60,7 +60,7 @@ button {
   font-family: monospace;
   background-color: #000;
   font-size: 1.6vh;
-  border: 0.2vh solid white;
+  border: 0.33vh outset buttonface;
   color: white;
   border-radius:2vh;
   padding: 0.4vh 1vh;
@@ -68,6 +68,11 @@ button {
   cursor:pointer;
 }
 
+ button.disabled {
+  background-color: #000;
+  color: white;
+  opacity:0.66;
+}
 button:hover {
   background-color: white;
   color: black;

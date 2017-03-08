@@ -48,6 +48,15 @@ var rangeArrays = [
   [64, 96,  64, 128]
 ];
 
+function toggleRepeat(el) {
+  
+  if( (audio.loop = !audio.loop) ){
+    el.classList.remove("disabled");
+  } else {
+    el.classList.add("disabled");
+  }
+}
+
 function initClubber (query) {
   for(i=0; i<4; i++){
     var o = {"s": smoothArrays, "r": rangeArrays, "a": adaptArrays}
