@@ -199,7 +199,7 @@ function bands(el) {
 }
 
 function stateLink(el){
-  el.href = window.location.origin+window.location.pathname+"?"+genState();
+  el.href = "https://wizgrav.github.io/clubber/tool/index.html?"+genState();
 }
 
 function sourceLink(el){
