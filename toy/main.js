@@ -40,7 +40,7 @@ var shaders = [], currentShaders = [];
 
 shaderIds.forEach(function (id) {
   var shader = new Shader(gl, { 
-    source: load("toy/shaders/" + id + ".fs"), 
+    source: load("assets/shaders/" + id + ".fs"), 
     uniforms: uniforms, 
     correct: needsCorrection
   });
@@ -49,7 +49,7 @@ shaderIds.forEach(function (id) {
 });
 currentShaders.push(shaders[8]);
 var debugShader = new Shader(gl, { 
-    source: load("toy/shaders/debug.fs"), 
+    source: load("assets/shaders/debug.fs"), 
     uniforms: uniforms, 
     correct: needsCorrection
   });

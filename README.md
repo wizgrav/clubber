@@ -117,6 +117,17 @@ The smoothing factors work similarly to the ones for the measurements, including
 
 To get an idea of how it works in practice [click here](http://wizgrav.github.io/clubber/tool/?a1=0.33,0.1,0.33,0.1)  and select the spectrum mode(click the views button twice). The green band will be adaptive. Check the Clubber Tool section for details on how to configure and use the utility.
 
+Sometimes the audio source maybe located away from the box doing the presentations. In that case you can setup a minimal clubber app(no bands defined) to listen to the audio and perform the fft -> midi transform, extract the clubber.notes array and transmit them to another. You can then import them on the rendering box like this:
+
+```javascript
+
+// The third(true) argument indicates that the data are already in midi space
+clubber.update(time, noteArray, true); 
+
+```
+
+There's no need to listen to anything on the rendering box in this case. You just create and use bands as usual. Time is optional and you can just provide it with a null value.
+
 ### Tips ###
 
 Usually one would instantiate several bands, each covering a range of midi notes, low mid high etc, calling them every render iteration and passing the returned arrays/vec4s as uniforms to modulate webgl shaders. Other uses are equally easy, just pick and use elements from the arrays as needed.
@@ -156,7 +167,8 @@ When in the context of clubber, The CLUBBER_X defines will have the expressions 
 
 At any point, you can copy the address of the **State** link to get a full snapshot of the current state of the tool contained in a long url. Band configs, glsl snippets, current track and shader are all serialized so this url is essentially a self contained music vis patch that can be easily stored and shared.
 
-if you'd like to use the modulators you designed in your own js apps, webgl or other, check [Clubberize](https://github.com/wizgrav/clubberize) 
+if you'd like to use the modulators you designed in your own js apps, webgl or other, check [Clubberize](https://github.com/wizgrav/clubberize). This will allow you to reuse the patches made in clubber tool within your own applications.
+
 ### Clubber in the wild ###
 
 [Waveform demo by spleen](https://github.com/spleennooname/webg-clubber-demo) 
@@ -166,6 +178,11 @@ if you'd like to use the modulators you designed in your own js apps, webgl or o
 [Dancing Torus by jiin](http://dancing-torus.s3-website-us-east-1.amazonaws.com/)
 
 [Dancing Torus by jiin - wizgrav's remix](https://wizgrav.github.io/dancing-torus)
+
+[Copernicus - featuring Mike Gao's track Adventura](https://wizgrav.github.io/copernicus)
+
+[Rene - An ode to Nikos Kavaddias poem 'Woman', and a beautiful girl <3](https://wizgrav.github.io/rene)
+
 
 ## Contributors
 

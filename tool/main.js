@@ -117,14 +117,14 @@ function getChunk(s) {
 }
 
 shaders.push(new Shader(gl, { 
-    source: load("../toy/shaders/debug.fs"), 
+    source: load("../assets/shaders/debug.fs"), 
     uniforms: uniforms, 
     correct: false
   })
 );
 
 shaders.push(new Shader(gl, { 
-    source: load("../toy/shaders/spectrum.fs"), 
+    source: load("../assets/shaders/spectrum.fs"), 
     uniforms: uniforms, 
     correct: false
   })
@@ -135,6 +135,7 @@ var ALTEXT = null;
 var renderMods = true;
 
 var defaultShaders = {
+  "No shader": "*",
   "Generators by Kali": "https://www.shadertoy.com/view/XtySDy",
   "Fractal land by Kali": "https://www.shadertoy.com/view/ltyXR1",
   "Seascape by TDM": "https://www.shadertoy.com/view/4lKSzh",
@@ -152,6 +153,14 @@ function loadShader(s) {
   if(!s) return;
   var si = parseInt(s);
   s = shaders[si] ? shaders[si]:s;
+  if(s === "*") {
+    ALT = ALTEXT = null;
+    if(altShader) {
+      gl.deleteProgram(altShader.programInfo.program);
+      altShader = null;
+    }
+    return;
+  }
   shadertoy(s).then(function(t){ ALT=s; ALTEXT=t; reloadAll(); RATIO=4;});
 }
 
@@ -240,7 +249,7 @@ canvas.addEventListener("click", handleClick);
 descriptionEl.addEventListener("click", handleClick);
 
 
-function reloadAll () {
+function reloadAll (onlyMods) {
   reload();
   if(ALTEXT) reload(ALTEXT);
 }
@@ -297,9 +306,6 @@ function reload (alt) {
       }    
     }
   });
-  
-  console.log(defines);
-  
 }
 
 
@@ -375,6 +381,7 @@ function  render(time) {
     uniforms.iBounds[4 * i + 2] = obj.low / 128;
     uniforms.iBounds[4 * i + 3] = obj.high / 128;
   }
+
   twgl.setTextureFromArray(gl, uniforms.iNotes, clubber.notes, noteTexOptions);
   data.time = time/1000;
   gl.clear(gl.COLOR_BUFFER_BIT);

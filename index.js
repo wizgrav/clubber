@@ -1,5 +1,5 @@
 /* 
-* clubber.js 1.4.3 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
+* clubber.js 1.5 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
 * Available via the MIT license. Check http://github.com/wizgrav/clubber for info.
 */
 
@@ -7,9 +7,10 @@ var Clubber = function (config) {
   if (!config) config = {};
   this.context = config.context || new (window.AudioContext || window.webkitAudioContext)();
   
-  var analyser = this.context.createAnalyser();
-  analyser.fftSize = config.size || 2048;
-  
+  var analyser = config.analyser || this.context.createAnalyser();
+  analyser.fftSize = config.analyser ? config.analyser.fftSize : (config.size || 2048);
+  config.mute = config.analyser ? true : config.mute;
+
   Object.defineProperty(this, 'smoothing', {
     get: function() {
       return analyser.smoothingTimeConstant;
@@ -18,13 +19,35 @@ var Clubber = function (config) {
       analyser.smoothingTimeConstant = value;
     }
   });
+
+  Object.defineProperty(this, 'muted', {
+    get: function() {
+      return this._muted;
+    },
+    set: function(value) {
+      if(!this.analyser) return true;
+      if(this._muted) {
+        if(value === false){
+          this.analyser.connect(this.context.destination);
+          this._muted = false;
+        } 
+      } else if(value === true){
+        this.analyser.disconnect(this.context.destination);
+        this._muted = true;
+      }
+    }
+  });
   
   this.analyser = analyser;
   
   this.bufferLength = this.analyser.frequencyBinCount;
   
-  if (!config.mute) this.analyser.connect(this.context.destination);
-  
+  if (!config.mute) {
+     this.analyser.connect(this.context.destination);
+  }
+
+  this.muted = config.mute;
+
   this.data = new Uint8Array(this.bufferLength);
   this.keys = new Uint8Array(this.bufferLength);
   this.noteSums = new Uint16Array(128);
@@ -57,7 +80,11 @@ Clubber.prototype.listen = function (obj) {
     this.source = obj;
   } else {
     this.el = obj;
-    this.source = this.context.createMediaElementSource(obj);
+    if (obj._mediaElementSource) {
+      this.source = obj._mediaElementSource;
+    } else {  
+      this.source = obj._mediaElementSource  = this.context.createMediaElementSource(obj);
+    }
   }
   this.source.connect(this.analyser);
 };
@@ -217,37 +244,42 @@ Clubber.prototype.band = function (config) {
 };
 
 // You can pass the frequency data on your own using the second argument.
-Clubber.prototype.update =  function (time, data) {
+// isProcessed specifies whether the data are already in midi space.
+Clubber.prototype.update =  function (time, data, isProcessed) {
   var c = this.cache, self=this;
   if (!data) {
     this.analyser.getByteFrequencyData(this.data);
+    isProcessed = false;
     data = this.data;
   }
-  // Calculate energy per midi note and fill holes in the lower octaves
-  for(var i = 0; i < this.notes.length; i++){
-    this.noteSums[i] = 0;
-  }
-  for(i = 0; i < this.maxBin; i++){
-    this.noteSums[this.keys[i]] += data[i];
-  }
-  
-  var lastIndex = 0, lastVal=0;
-  for(i = 0; i < this.notes.length; i++){
-    var w = this.weights[i];
-    if(!w) continue;
-    var v = this.noteSums[i] / w;
-    this.notes[i] = v;
-    if (i > this.holeIndex) continue;
-    var di = i - lastIndex;
-    var dv = v - lastVal;
-    for(var j = lastIndex ? 1 : 0 ; j < di; j++) {
-      this.notes[lastIndex + j] = lastVal + j * dv/di; 
+
+  if(!isProcessed) {
+    // Calculate energy per midi note and fill holes in the lower octaves
+    for(var i = 0; i < this.notes.length; i++){
+      this.noteSums[i] = 0;
     }
-    lastVal = v;
-    lastIndex = i;
+    for(i = 0; i < this.maxBin; i++){
+      this.noteSums[this.keys[i]] += data[i];
+    }
+    
+    var lastIndex = 0, lastVal=0;
+    for(i = 0; i < this.notes.length; i++){
+      var w = this.weights[i];
+      if(!w) continue;
+      var v = this.noteSums[i] / w;
+      this.notes[i] = v;
+      if (i > this.holeIndex) continue;
+      var di = i - lastIndex;
+      var dv = v - lastVal;
+      for(var j = lastIndex ? 1 : 0 ; j < di; j++) {
+        this.notes[lastIndex + j] = lastVal + j * dv/di; 
+      }
+      lastVal = v;
+      lastIndex = i;
+    }
   }
-  
-  this.time = time !== undefined ? parseFloat(time) : window.performance.now();
+
+  this.time = !isNaN(parseFloat(time))  ? parseFloat(time) : window.performance.now();
 };
 
 Clubber.prototype.descriptions = [

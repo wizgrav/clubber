@@ -9,6 +9,10 @@
         <meta name="twitter:player:width" content="600">
         <meta name="twitter:player:height" content="370">
 
+        <meta property="og:title" content="Clubber Tool">
+        <meta property="og:image" content="../toy/favicon.png">
+        <meta property="og:description" content="description goes here">
+
         <meta charset="utf-8">        
         <meta name="author" content="Yannis Gravezas <wizgrav@gmail.com>">
         <meta name="description" content="A tool for music visualization research">
@@ -21,16 +25,16 @@
         <!-- Chrome on Android -->
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="application-name" content="Clubber debugger">
-        <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon.png">
+        <link rel="icon" sizes="192x192" href="../toy/favicon.png">
 
         <!-- Safari on iOS -->
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <meta name="apple-mobile-web-app-title" content="Clubber debugger">
-        <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+        <link rel="apple-touch-icon" href="../toy/favicon.png">
 
         <!-- Windows 8 -->
-        <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon.png">
+        <meta name="msapplication-TileImage" content="../toy/favicon.png">
         <meta name="msapplication-TileColor" content="#FFFFFF">
 
 
@@ -39,224 +43,15 @@
         <link rel="icon" type="image/png" href="../toy/favicon.png" />
 
         <title>Clubber Tool</title>
-        <link href='../toy/main.css' rel='stylesheet' type='text/css'>
-        <style>
-          #audio {
-            position: fixed;
-            bottom:0;
-            left: 0;
-            width:100%;
-            z-index:1000;
-          }
-          
-          #audio audio {
-            position:relative;
-            display: block;
-          }
-          #editor {
-            margin:0;
-            padding:0;
-            opacity:0;
-            transition: opacity 0.3s;
-            margin-top: 0.33vh;
-            z-index:10000;
-          }
-          #header:hover #editor, #header:hover #config {
-            opacity:1;
-          }
-          #editor div {
-            position:relative;
-          }
-          
-          input, select {
-            font-weight: bold;
-            font-size: 1.6vh;
-            font-family:monospace;
-            vertical-align: middle;
-            background-color: #eee;
-          }
-          #editor input[type=text]{
-            display:inline-block;
-            border: 0.2vh solid #ccc;
-            font-family:monospace;
-            font-weight: bold;
-            width:99.6vw;
-            margin-top:0;
-          }
-          #editor input[type=checkbox]{
-            z-index:1;
-            height:1.6vh;
-            position:absolute;
-            right:0;
-            top:0.66vh;
-            
-          }
-          #editor div.red input[type=text]{
-            background-color: rgba(255, 220, 220, 0.92);
-            color: rgb(0, 36, 36);
-          }
-          #editor div.green input[type=text]{
-            background-color: rgba(220, 255, 220, 0.92);
-            color: rgb(36, 0, 36);
-          }
-          #editor div.blue input[type=text]{
-            background-color:  rgba(220, 220, 255, 0.92);
-            color: rgb(36, 36, 0);
-          }
-           #editor div.blue input[type=text]{
-            background-color:  rgba(232, 232, 232, 0.92);
-            color: rgb(32, 32, 32);
-          }
-          
-          #octaves {
-            position: relative;
-            display: none;
-            height: 4vh;
-            width: 99%;
-            margin: 0;
-          }
-          
-          #octaves.show {
-            display: block;
-          }
-          
-          #octaves div{
-            font-family: monospace;
-            position:absolute;
-            font-size: 2vh;
-            color: #CCC;
-            text-shadow: 1px 1px #000;
-            top:1vh; 
-          }
-          
-          #header a {
-            font-weight:bold;
-            text-decoration: none;
-            vertical-align: middle;
-            opacity: 0.6;
-            transition: opacity 0.1s;
-            text-shadow: 0.2vh 0.2vh #666;
-          }
-          #info a {
-            opacity: 0.9;
-          }
-          #header a:hover {
-            text-shadow: 0.2vh 0.2vh #333;
-            opacity: 1.0;
-          }
-          #descriptions {
-            z-index:99;
-            width:100vw;
-            height:100vh;
-            position: fixed;
-            display:none;
-          }
-          
-          #descriptions.show {
-            display:block;
-          }
-          
-          #descriptions div {
-            width: 5vw;
-            height: 100vh;
-            position:absolute;
-          }
-          
-          #config {
-            opacity:0;
-            transition: opacity 0.2s;
-            margin-top:0.36vh;
-            color: #eee;
-            text-shadow: 1px 1px #666;
-            font-weight: bold;
-            font-size: 1.6vh;
-            font-family:monospace;
-          }
-          
-          #template {
-            width:4vw;
-          }
+        
         </style>
     </head>
 
     <body>
-      <div id="descriptions">
       </div>
-      <div id="audio" title="Alt-P toggles play/pause. Alt-<KLNM> seeks -/+ 5 and -/+ 30 sec. Page also accepts drag & drop of audio files. WARNING: The volume control affects the measurements.">    
-        <div id="octaves"></div>
-        <audio controls></audio>
-      </div>
-      <div id="header" >
-        <img src="../toy/soundcloud.png"/>
-        <div style="display:inline;" title="Alt+<1-6> toggles buttons. The State link's url contains a snapshot of the current state.">
-        <button onclick="bands(this)" class="disabled">1 views</button>
-        <button id="mods" onclick="toggleMods(this)">2 mods</button>
-        <button onclick="maximize()">3 full</button>
-        <button onclick="change()" >4 track</button>
-        <button onclick="loadShader()">5 shader</button>
-        <button onclick="toggleRepeat(this)" class="disabled">6 loop</button>&nbsp;
-        </div>
-        <a style="color: rgb(220, 220, 255);" id="source" onmouseenter="sourceLink(this)" href="" target="_blank"
-          title="Go to the shader's source on ShaderToy.">Source&nbsp;</a>
-          <a style="color: rgb(220,255,220);" id="state" href="" target="_blank" onmouseenter="stateLink(this)"
-          placeholder="This link's adress contains the whole current state of the tool"
-          title="Copy and store this link's url for a full snapshot of the current state."
-          >State&nbsp;</a>
-        <a style="color: rgb(255,220,220);" href="https://www.github.com/wizgrav/clubber" target="_blank">Github&nbsp;</a>
-        <div id="info"></div>
-        <div id="editor" title="Alt+<RGBA> toggles fields by color. Fields must evaluate to single floats, ideally 0-1. Press enter to compile.">
-          <div class="red">
-            <input type="text" onkeyup="if(event.keyCode == 13) reloadAll()"
-            value="length(iMusic[0].yz) * min(iMusic[0].w, iMusic[1].w)" />
-            <input type="checkbox" id="radioRed" onchange="reloadAll()" checked/>
-          </div>
-          <div class="green">
-            <input type="text" onkeyup="if(event.keyCode == 13) reloadAll()"
-            value="mix(iMusic[3].w, iMusic[3].z, iMusic[2].y)"/>
-            <input type="checkbox" id="radioRed" onchange="reloadAll()" checked/>
-          </div>
-          <div class="blue">
-            <input type="text" onkeyup="if(event.keyCode == 13) reloadAll()" />
-            <input type="checkbox" id="radioRed" onchange="reloadAll()" checked/>
-          </div>
-          <div class="alpha">
-            <input type="text" onkeyup="if(event.keyCode == 13) reloadAll()" 
-                placeholder="Write glsl statements in the fields. These should evaluate to floats, ideally 0-1.  Press enter to compile. Alt-<RGBA> toggles fields by color."/>
-            <input type="checkbox" id="radioAlpha" onchange="reloadAll()" checked/>
-          </div>
-        </div>
-        <div id="config">
-          <select id="band" onchange="selectBand(this.selectedIndex)">
-            <option style="background-color: rgb(255,220,220);">iMusic[0]</option>
-            <option style="background-color: rgb(220,255,220);">iMusic[1]</option>
-            <option style="background-color: rgb(220,220,255);">iMusic[2]</option>
-            <option style="background-color: rgb(232,232,232);">iMusic[3]</option>
-          </select>
-          <button id="template" onclick="changeTemplate(this); return false;">0123</button> 
-          <span> rect:</span>
-          <input type="number" min="0" max="127" step="1" onchange="updateBand()"/>
-          <input type="number" min="0" max="127" step="1" onchange="updateBand()"/>
-          <input type="number" min="0" max="127" step="1" onchange="updateBand()"/>
-          <input type="number" min="0" max="127" step="1" onchange="updateBand()"/>
-          <span> smooth:</span>
-          <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-          <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-          <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-          <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-          <span> adapt:</span>
-          <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-          <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-          <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-          <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-        </div>
-        
-        <br/><br/><br/><br/>
-      </div>
-      <canvas></canvas>
-      <script src="../dist/clubber.js"></script>
-      <script src="../toy/twgl.min.js"></script>
-      <script src="../toy/shader.js"></script>
-      <script src="../toy/common.js"></script>
-      <script src="./main.js"></script>
+      
+      <script>
+        window.location = "./tool.html"+window.location.search;
+      </script>
     </body>
 </html>

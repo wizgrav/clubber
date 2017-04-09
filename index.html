@@ -21,13 +21,13 @@
     <!-- Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="ClubberToy&trade;">
-    <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon.png">
+    <link rel="icon" sizes="192x192" href="./assets/favicon.png">
 
     <!-- Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="ClubberToy&trade;">
-    <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="./assets/favicon.png">
 
     <!-- Windows 8 -->
     <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon.png">
@@ -36,17 +36,17 @@
 
     <meta name="theme-color" content="#000000">
 
-    <link rel="icon" type="image/png" href="./toy/favicon.png" />
+    <link rel="icon" type="image/png" href="./assets/favicon.png" />
 
     <title>ClubberToy&trade;</title>
-    <link href='toy/main.css' rel='stylesheet' type='text/css'>  
+    <link href='index.css' rel='stylesheet' type='text/css'>  
   </head>
 
   <body>
     <audio controls></audio>
     
     <div id="header" style="z-index:0" title="You can also drag & drop audio files.">
-      <img src="toy/soundcloud.png"/>
+      <img src="assets/soundcloud.png"/>
       <button onclick="change()" >track</button>
       <button onclick="maximize()">full</button>
       <button onclick="toggleRepeat(this)" class="disabled">loop</button>&nbsp;
@@ -58,7 +58,7 @@
       <div id="info"></div>
     </div>
 
-    <img id="noise" src="toy/noise.png" style="display:none"/>
+    <img id="noise" src="assets/noise.png" style="display:none"/>
     <canvas></canvas>
 
     <!--githubcorner-->
@@ -72,9 +72,9 @@
     <!--endgithubcorner-->
 
     <script src="dist/clubber.js"></script>
-    <script src="toy/twgl.min.js"></script>
-    <script src="toy/shader.js"></script>
-    <script src="toy/common.js"></script>
+    <script src="lib/twgl.min.js"></script>
+    <script src="lib/shader.js"></script>
+    <script src="lib/common.js"></script>
     <script src="toy/main.js"></script>
   </body>
 </html>
