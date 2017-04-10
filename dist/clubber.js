@@ -299,11 +299,14 @@
 	    data = this.data;
 	  }
 
-	  if(!isProcessed) {
+	  if(isProcessed) {
+	    this.notes.set(data);
+	  } else {
 	    // Calculate energy per midi note and fill holes in the lower octaves
 	    for(var i = 0; i < this.notes.length; i++){
 	      this.noteSums[i] = 0;
 	    }
+
 	    for(i = 0; i < this.maxBin; i++){
 	      this.noteSums[this.keys[i]] += data[i];
 	    }

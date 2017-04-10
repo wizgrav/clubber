@@ -181,7 +181,7 @@ if you'd like to use the modulators you designed in your own js apps, webgl or o
 
 [Copernicus - featuring Mike Gao's track Adventura](https://wizgrav.github.io/copernicus)
 
-[Rene - An ode to Nikos Kavaddias poem 'Woman', and a beautiful girl <3](https://wizgrav.github.io/rene)
+[An ode to Nikos Kavaddias poem 'Woman'](https://wizgrav.github.io/rene)
 
 
 ## Contributors
