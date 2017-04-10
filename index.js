@@ -1,5 +1,5 @@
 /* 
-* clubber.js 1.5 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
+* clubber.js 1.5.1 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
 * Available via the MIT license. Check http://github.com/wizgrav/clubber for info.
 */
 
