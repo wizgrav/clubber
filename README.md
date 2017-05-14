@@ -1,6 +1,8 @@
 clubber
 ========
 
+![Clubber tool screenshot](https://wizgrav.github.io/clubber/screen.png)
+
 A javascript library to analyze the frequency data from audio sources and extract the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggests to be a better segregation for music audio. A small collection of meaningful measurements are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of visualisations that react pleasantly to the audio.
 
 [A short introduction to the music vectorization technique on Medium.com](https://medium.com/@wizgrav/music-reactive-visualizations-924df006f2ae#.6z10i27c1)
@@ -83,7 +85,7 @@ If a **template** is not specified it defaults is **0123**, the first four measu
 
 Bands also provide exponential smoothing for the measurements which is controlled by the **smooth** option. This takes an element array of normalized floats, same length as the template property, to use as factors for the smoothing of each respective measurement. A value of 1 means instant change and as it goes down to 0 it smooths more. 
 
-A negative value for an element activates the snap mode. In this mode when the energy rises it gets smoothed by the factor defined as the **snap** option which should normally be fast (default is 0.33 which is pretty fast) and when falling, it instead uses the abs(value) as the factor. This comes in handy for eg kicks which you would want to rise fast but slowly fade down, so you would use something like -0.1 or something like that. There's a single **snap** factor for all measurements of the object and it can be overriden in the options.
+A negative value for an element activates the snap mode. In this mode when the energy rises it gets smoothed by the factor defined as the **snap** option which should normally be fast (default is 0.33 which is pretty fast) and when falling, it instead uses the abs(value) as the factor. This comes in handy for eg kicks which you would want the value to rise fast but slowly fade down, so you would use something like -0.1 or something like that. There's a single **snap** factor for all measurements of the object and it can be overriden in the options.
 
 ```javascript
 var band = clubber.band({ // clubber here is the instantiated object from above
@@ -126,7 +128,7 @@ clubber.update(time, noteArray, true);
 
 ```
 
-There's no need to listen to anything on the rendering box in this case. You just create and use bands as usual. Time is optional and you can just provide it with a null value.
+There's no need to listen to anything on the rendering box in this case. You just create and use bands as usual. Time is optional and you can just provide it with a null value to use the internal clock.
 
 ### Tips ###
 
@@ -181,8 +183,7 @@ if you'd like to use the modulators you designed in your own js apps, webgl or o
 
 [Copernicus - featuring Mike Gao's track Adventura](https://wizgrav.github.io/copernicus)
 
-[An ode to Nikos Kavaddias poem 'Woman'](https://wizgrav.github.io/rene)
-
+[Shepard glitch by spleen](https://spleennooname.github.io/shepard-glitch-me/build/index.html) 
 
 ## Contributors
 

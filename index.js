@@ -1,5 +1,5 @@
 /* 
-* clubber.js 1.5.1 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
+* clubber.js 1.6.0 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
 * Available via the MIT license. Check http://github.com/wizgrav/clubber for info.
 */
 
@@ -131,11 +131,13 @@ Clubber.prototype.band = function (config) {
   return function (output, offset) {    
     
     function fill(arr, output, offset) {
+      offset = offset || 0;
       if (output) {
         if (output instanceof Float32Array) {
           output.set(arr, offset);
         } else if(Array.isArray(output)){
-          for (var i = 0; i < 4; i++) output[offset+i] = arr[i];
+          var length = Math.min(output.length, arr.length) - offset;
+          for (var i = 0; i < length; i++) output[offset+i] = arr[i];
         } else if(output.fromArray){
           output.fromArray(arr);
         } 
