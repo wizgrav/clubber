@@ -183,7 +183,9 @@ if you'd like to use the modulators you designed in your own js apps, webgl or o
 
 [Copernicus - featuring Mike Gao's track Adventura](https://wizgrav.github.io/copernicus)
 
-[Shepard glitch by spleen](https://spleennooname.github.io/shepard-glitch-me/build/index.html) 
+[Shepard glitch by spleen](https://spleennooname.github.io/shepard-glitch-me/build/index.html)
+
+[Several shaders by alvarobyrne](http://jsdo.it/alvarobyrne/6Gk2)
 
 ## Contributors
 
