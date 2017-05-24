@@ -191,6 +191,8 @@
 	    };
 	    
 	    var config = obj.config, data = obj.data, rect = obj.rect;
+	    rect.high = Math.max(rect.high, rect.low + 1); // a bit ugly
+
 	    if(typeof offset === "object"){
 	      parseConfig.call(obj, offset);
 	      offset = arguments[2];
@@ -203,7 +205,7 @@
 	      return rect;
 	    }
 	    
-	    var s = config.smooth, snap = config.snap, idx=0, val=0, midx=0, mval=128, vsum=0, nsum=0, xsum=0, psum=0, osum = 0, cnt=0;
+	    var s = config.smooth, snap = config.snap, idx=0, val=0, Val=0, midx=0, mval=128, Vsum, vsum=0, nsum=0, xsum=0, psum=0, osum = 0, cnt=0;
 
 	    for(var i=config.from; i < config.to;i++){
 	      var V = scope.notes[i] / 2;
@@ -213,7 +215,7 @@
 	        // Sum musical keys and power.
 	        v -= rect.low; 
 	        var x = i - config.from;
-	        osum += Math.floor( i  / 12) * v;
+	        osum += Math.round( i  / 12) * v;
 	        nsum += ( i % 12 ) * v;
 	        psum += x * v;
 	        vsum += v;
@@ -221,9 +223,10 @@
 	        cnt++;
 
 	        // Strongest note.
-	        if (V > val){
+	        if (V > Val){
 	          idx = i;
-	          val = V;
+	          Val = V;
+	          val = v;
 	        } else if(v < mval) {
 	          midx = i;
 	          mval = v;
@@ -251,8 +254,8 @@
 	    var height = rect.high - rect.low, _height = config.high - config.low, area = width * height;
 	    var ah = Math.min(config.high, config.low + av + config.adapt[2] * _height);
 	    var al = Math.max(config.low, config.low + av - config.adapt[0] * _height);
-	    var of = Math.floor(config.from / 12), ot = Math.floor(config.to / 12);
-	    val = height ? Math.min(rect.high, Math.max(0, val - rect.low)) / height : 0;
+	    var ocf = Math.floor(config.from / 12), oct = Math.ceil(config.to / 12);
+	    val = height ? val / height : 0;
 	    
 	    // fixed timestep
 	    if (obj.time === undefined) obj.time = scope.time;
@@ -272,13 +275,13 @@
 	          case 5: 
 	            data[i] = smoothFn(vsum ? ((psum / vsum)) / width : 0 , data[i], s[i], snap); break;
 	          case 6: 
-	            data[i] = smoothFn(vsum ? ((osum / vsum - of)) / (ot - of) : 0, data[i], s[i], snap); break;
+	            data[i] = smoothFn(vsum ? ((osum / vsum - ocf)) / (oct - ocf) : 0, data[i], s[i], snap); break;
 	          case 7: 
 	            data[i] = smoothFn(area ? vsum/area:0, data[i], s[i], snap); break;
 	          case 8: 
-	            data[i] = smoothFn((rect.high - config.low) / _height, data[i], s[i], snap); break;
-	          case 9: 
 	            data[i] = smoothFn((rect.low - config.low) / _height, data[i], s[i], snap); break;
+	          case 9: 
+	            data[i] = smoothFn((rect.high - config.low) / _height, data[i], s[i], snap); break;
 	        }
 	      });
 	      rect.high = smoothFn(ah, rect.high, config.adapt[3], snap);
@@ -342,8 +345,8 @@
 	  "Power weighted average midi index",
 	  "Power weighted average octave index", 
 	  "Ratio of spectrum window area covered",
-	  "Adaptive low threshold relative to bounds", 
-	  "Adaptive high threshold relative to bounds"
+	  "Adaptive low threshold relative to bounds",
+	  "Adaptive high threshold relative to bounds",
 	];
 
 	module.exports = window.Clubber = Clubber;

@@ -1,6 +1,6 @@
 {
   "name": "clubber",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Application of music theory in audio reactive visualizations",
   "main": "./index.js",
   "local-web-server": {

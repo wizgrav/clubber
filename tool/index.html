@@ -44,14 +44,20 @@
 
         <title>Clubber Tool</title>
         
-        </style>
     </head>
 
     <body>
       </div>
       
       <script>
-        window.location = "./tool.html"+window.location.search;
+        if (window.name && !window.name.indexOf("clubber$")) {
+          window.parent.postMessage({
+            name: window.name.split("$")[1],
+            url: window.location.href
+          }, "*");
+        } else {
+          window.location = "./tool.html"+window.location.search;
+        }
       </script>
     </body>
 </html>
