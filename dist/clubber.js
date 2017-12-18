@@ -42,10 +42,10 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/* 
-	* clubber.js 1.6.0 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
+	* clubber.js 1.7.0 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
 	* Available via the MIT license. Check http://github.com/wizgrav/clubber for info.
 	*/
 
@@ -57,6 +57,8 @@
 	  analyser.fftSize = config.analyser ? config.analyser.fftSize : (config.size || 2048);
 	  config.mute = config.analyser ? true : config.mute;
 
+	  this.fps = config.fps || 60;
+
 	  Object.defineProperty(this, 'smoothing', {
 	    get: function() {
 	      return analyser.smoothingTimeConstant;
@@ -65,6 +67,8 @@
 	      analyser.smoothingTimeConstant = value;
 	    }
 	  });
+
+	  this._muted = true;
 
 	  Object.defineProperty(this, 'muted', {
 	    get: function() {
@@ -85,14 +89,20 @@
 	  });
 	  
 	  this.analyser = analyser;
+	  this.rate = config.rate || this.context.sampleRate;
 	  
-	  this.bufferLength = this.analyser.frequencyBinCount;
-	  
-	  if (!config.mute) {
-	     this.analyser.connect(this.context.destination);
-	  }
+	  this.resize(analyser.frequencyBinCount);
 
-	  this.muted = config.mute;
+	  this.muted = !!config.mute;
+	};
+
+	Clubber.prototype.resize = function(bins) {
+	  if(this.bufferLength === bins) return;
+
+	  this.maxBin = 0;
+	  var lastkey=0,idx=0;
+	  
+	  this.bufferLength = bins;
 
 	  this.data = new Uint8Array(this.bufferLength);
 	  this.keys = new Uint8Array(this.bufferLength);
@@ -100,9 +110,7 @@
 	  this.notes = new Uint8Array(128);
 	  this.weights = new Uint8Array(128);
 	  
-	  this.maxBin = 0;
-	  var lastkey=0,idx=0;
-	  for(var i = 0, inc=(this.context.sampleRate/2)/this.bufferLength; i < this.bufferLength;i++){
+	  for(var i = 0, inc=(this.rate/2)/this.bufferLength; i < this.bufferLength;i++){
 	    var freq = (i+0.5)*inc;
 	    this.maxBin = i;
 	    if(freq > 13280) {
@@ -143,8 +151,7 @@
 	      from:1, to:128, low:64, high:128, 
 	      smooth: [0.1, 0.1, 0.1, 0.1],
 	      adapt: [1.0, 1.0, 1.0, 1.0],
-	      snap: 0.33, step: 1000/60,
-	      template: [0, 1, 2, 3]
+	      snap: 0.33, template: [0, 1, 2, 3]
 	    };
 	    
 	    if(config){
@@ -259,7 +266,7 @@
 	    
 	    // fixed timestep
 	    if (obj.time === undefined) obj.time = scope.time;
-	    for (var t = obj.time, step = obj.config.step, tmax = scope.time + step ; t <= tmax; t += step) {
+	    for (var t = obj.time, step = 1000 / scope.fps, tmax = scope.time ; t < tmax; t += step) {
 	      config.template.forEach(function (k,i) {
 	        switch (k) {
 	          default: 
@@ -298,39 +305,42 @@
 	// isProcessed specifies whether the data are already in midi space.
 	Clubber.prototype.update =  function (time, data, isProcessed) {
 	  var c = this.cache, self=this;
-	  if (!data) {
+	  
+	  if (data) {
+	    if(isProcessed) {
+	        this.notes.set(data);
+	        return;
+	    }
+	    this.resize(data.length);
+	  } else {
 	    this.analyser.getByteFrequencyData(this.data);
 	    isProcessed = false;
 	    data = this.data;
 	  }
 
-	  if(isProcessed) {
-	    this.notes.set(data);
-	  } else {
-	    // Calculate energy per midi note and fill holes in the lower octaves
-	    for(var i = 0; i < this.notes.length; i++){
-	      this.noteSums[i] = 0;
-	    }
+	  // Calculate energy per midi note and fill holes in the lower octaves
+	  for(var i = 0; i < this.notes.length; i++){
+	    this.noteSums[i] = 0;
+	  }
 
-	    for(i = 0; i < this.maxBin; i++){
-	      this.noteSums[this.keys[i]] += data[i];
+	  for(i = 0; i < this.maxBin; i++){
+	    this.noteSums[this.keys[i]] += data[i];
+	  }
+	  
+	  var lastIndex = 0, lastVal=0;
+	  for(i = 0; i < this.notes.length; i++){
+	    var w = this.weights[i];
+	    if(!w) continue;
+	    var v = this.noteSums[i] / w;
+	    this.notes[i] = v;
+	    if (i > this.holeIndex) continue;
+	    var di = i - lastIndex;
+	    var dv = v - lastVal;
+	    for(var j = lastIndex ? 1 : 0 ; j < di; j++) {
+	      this.notes[lastIndex + j] = lastVal + j * dv/di; 
 	    }
-	    
-	    var lastIndex = 0, lastVal=0;
-	    for(i = 0; i < this.notes.length; i++){
-	      var w = this.weights[i];
-	      if(!w) continue;
-	      var v = this.noteSums[i] / w;
-	      this.notes[i] = v;
-	      if (i > this.holeIndex) continue;
-	      var di = i - lastIndex;
-	      var dv = v - lastVal;
-	      for(var j = lastIndex ? 1 : 0 ; j < di; j++) {
-	        this.notes[lastIndex + j] = lastVal + j * dv/di; 
-	      }
-	      lastVal = v;
-	      lastIndex = i;
-	    }
+	    lastVal = v;
+	    lastIndex = i;
 	  }
 
 	  this.time = !isNaN(parseFloat(time))  ? parseFloat(time) : window.performance.now();
@@ -352,5 +362,5 @@
 	module.exports = window.Clubber = Clubber;
 
 
-/***/ }
+/***/ })
 /******/ ]);

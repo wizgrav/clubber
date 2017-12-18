@@ -59,11 +59,11 @@ span {
 button {
   font-family: monospace;
   background-color: #000;
-  font-size: 1.6vh;
-  border: 0.33vh outset buttonface;
+  font-size: 1.2vh;
+  border: 0.2vh outset buttonface;
   color: white;
   border-radius:2vh;
-  padding: 0.4vh 1vh;
+  padding: 0.5vh 1vh;
   margin-right:0.1vh;
   cursor:pointer;
 }

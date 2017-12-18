@@ -64,24 +64,29 @@
           #header:hover #editor, #header:hover #config {
             opacity:1;
           }
-          #editor div {
+          #editor > div {
             position:relative;
+            background-color: rgba(0,0,0,0.1);
+            z-index: 0;
           }
           
           input, select {
             font-weight: bold;
-            font-size: 1.6vh;
+            font-size: 1.33vh;
             font-family:monospace;
             vertical-align: middle;
             background-color: #eee;
           }
           #editor input[type=text]{
+            background-color: transparent;
+            color: rgba(32,32,32,0.96);
             display:inline-block;
             border: 0.2vh solid #ccc;
             font-family:monospace;
             font-weight: bold;
-            width:99.6vw;
+            width:99vw;
             margin-top:0;
+            padding: 0.1%;
           }
           #editor input[type=checkbox]{
             z-index:1;
@@ -89,29 +94,74 @@
             position:absolute;
             right:0;
             top:0.66vh;
-            
           }
+
+          input[type=number] {
+            border-radius: 0.33vh;
+            border: 0;
+            background-color: rgba(255,255,255,0.9);
+            padding: 0.33vh;
+          }
+
+          #editor > div > button {
+            z-index: 1;
+            height: 2vh;
+            font-size: 1.2vh;
+            width: 3vh;
+            position: absolute;
+            right: 2vh;
+            background-color: grey;
+            top: 0.1vh;
+            padding: 0;
+            border-radius: 0.66vh;
+            border: none;
+          }
+
           #editor div.red input[type=text]{
-            background-color: rgba(255, 220, 220, 0.92);
             color: rgb(0, 36, 36);
           }
           #editor div.green input[type=text]{
-            background-color: rgba(220, 255, 220, 0.92);
             color: rgb(36, 0, 36);
           }
           #editor div.blue input[type=text]{
-            background-color:  rgba(220, 220, 255, 0.92);
             color: rgb(36, 36, 0);
           }
-           #editor div.blue input[type=text]{
-            background-color:  rgba(232, 232, 232, 0.92);
+           #editor div.alpha input[type=text]{
             color: rgb(32, 32, 32);
+          }
+
+          #editor div.red{
+            background-color: rgba(255, 220, 220, 0.98);
+          }
+          #editor div.green{
+            background-color: rgba(220, 255, 220, 0.98);
+          }
+          #editor div.blue{
+            background-color:  rgba(220, 220, 255, 0.98);
+          }
+           #editor div.alpha{
+            background-color:  rgba(255, 255, 255, 0.98);
+          }
+           #editor > div {
+             overflow:hidden;
+           }
+          #editor > div > div {
+            background-color: rgba(200,200,200,0.66);
+            border-left: 0.16vh solid rgba(255,255,255,0.33);
+            position: absolute;
+            z-index: -1;
+            width: 50vw;
+            height: 100%;
+            right:0;
+            top:0;
+            
           }
           
           #octaves {
             position: relative;
             display: none;
-            height: 4vh;
+            height: 47.5vh;
+            margin-top: 44.5vh;
             width: 99%;
             margin: 0;
           }
@@ -126,7 +176,7 @@
             font-size: 2vh;
             color: #CCC;
             text-shadow: 1px 1px #000;
-            top:1vh; 
+            bottom:0vh; 
           }
           
           #header a {
@@ -146,8 +196,9 @@
           }
           #descriptions {
             z-index:99;
-            width:100vw;
-            height:100vh;
+            width:90vw;
+            height:40vh;
+            top:0; left:5vw;
             position: fixed;
             display:none;
           }
@@ -157,8 +208,9 @@
           }
           
           #descriptions div {
+            top:0;
             width: 5vw;
-            height: 100vh;
+            height: 40vh;
             position:absolute;
           }
           
@@ -176,6 +228,50 @@
           #template {
             width:4vw;
           }
+
+          #export {
+            position: fixed;
+            display:none;
+            width: 100vw;
+            height: 70vh;
+            top:22vh;
+                z-index: 10000;
+
+          }
+
+          #export textarea {
+            height: 66vh;
+            width: 90vw;
+            margin-left: 3vw;
+            border: 0.1vh solid white;
+            border-radius: 0.66vh;
+            padding: 2%;
+            background-color: rgba(32,32,32,0.96);
+            color: lightgray;
+            font-family: monospace;
+          }
+
+          .iLabel {
+            position: absolute;
+            top: 0vh;
+            width: 20vw;
+            text-align: center;
+            font-size: 2vh;
+            color: #CCC;
+            text-shadow: 1px 1px #000;
+          }
+          
+          button.midi {
+            display: none;
+          }
+
+          body.midi button.midi {
+            display: inline-block;
+          }
+
+          body {
+            background-color: black;
+          }
         </style>
     </head>
 
@@ -183,54 +279,71 @@
       <div id="descriptions">
       </div>
       <div id="audio" title="Alt-P toggles play/pause. Alt-<KLNM> seeks -/+ 5 and -/+ 30 sec. Page also accepts drag & drop of audio files. WARNING: The volume control affects the measurements.">    
-        <div id="octaves"></div>
+        <div id="octaves">
+          <div class="iLabel" style="left:0vw">iMusic[0]</div>
+          <div class="iLabel" style="left:20vw">iMusic[1]</div>
+          <div class="iLabel" style="left:40vw">iMusic[2]</div>
+          <div class="iLabel" style="left:60vw">iMusic[3]</div>
+          <div class="iLabel" style="left:80vw; color: #f9f900">Modulators</div>
+        </div>
         <audio controls></audio>
       </div>
       <div id="header" >
         <img src="../assets/soundcloud.png"/>
         <div style="display:inline;" title="Alt+<1-6> toggles buttons. The State link's url contains a snapshot of the current state.">
-        <button onclick="bands(this)" class="disabled">1 views</button>
-        <button id="mods" onclick="toggleMods(this)">2 mods</button>
+        <button onclick="bands(this)" class="disabled">1 debug</button>
+        <button onclick="toggleRepeat(this)" class="disabled">2 loop</button>
         <button onclick="maximize()">3 full</button>
         <button onclick="change()" >4 audio</button>
         <button onclick="loadShader()">5 shader</button>
-        <button onclick="toggleRepeat(this)" class="disabled">6 loop</button>&nbsp;
-        </div>
+        <button onclick="toggleExport(this)" class="disabled">6 code</button>
+        <button class="midi disabled" onclick="toggleMidi(this)">7 midi</button>
+      </div>
         <a style="color: rgb(220, 220, 255);" id="source" onmouseenter="sourceLink(this)" href="" target="_blank"
-          title="Go to the shader's source on ShaderToy.">Source&nbsp;</a>
+          title="Go to the shader's source on ShaderToy.">Shader&nbsp;</a>
           <a style="color: rgb(220,255,220);" id="state" href="" target="_blank" onmouseenter="stateLink(this)"
           placeholder="This link's adress contains the whole current state of the tool"
           title="Copy and store this link's url for a full snapshot of the current state."
           >State&nbsp;</a>
         <a style="color: rgb(255,220,220);" href="https://www.github.com/wizgrav/clubber" target="_blank">Github&nbsp;</a>
         <div id="info"></div>
+        
+        
         <div id="editor" title="Alt+<RGBA> toggles fields by color. Fields must evaluate to single floats, ideally 0-1. Press enter to compile.">
           <div class="red">
-            <input type="text" onkeyup="if(event.keyCode == 13) reloadAll()"
+            <div></div>
+            <input type="text" onkeyup="if(event.keyCode == 13) reMod()"
             value="length(iMusic[0].yz) * min(iMusic[0].w, iMusic[1].w)" />
-            <input type="checkbox" id="radioRed" onchange="reloadAll()" checked/>
+            <input type="checkbox" onchange="reMod()" checked/>
+            <button class="midi disabled" onclick="setMidi(this, 0)">---</button>
           </div>
           <div class="green">
-            <input type="text" onkeyup="if(event.keyCode == 13) reloadAll()"
+            <div></div>
+            <input type="text" onkeyup="if(event.keyCode == 13) reMod()"
             value="mix(iMusic[3].w, iMusic[3].z, iMusic[2].y)"/>
-            <input type="checkbox" id="radioRed" onchange="reloadAll()" checked/>
+            <input type="checkbox" onchange="reMod()" checked/>
+            <button class="midi disabled" onclick="setMidi(this, 1)">---</button>
           </div>
           <div class="blue">
-            <input type="text" onkeyup="if(event.keyCode == 13) reloadAll()" />
-            <input type="checkbox" id="radioRed" onchange="reloadAll()" checked/>
+            <div></div>
+            <input type="text" onkeyup="if(event.keyCode == 13) reMod()" />
+            <input type="checkbox" onchange="reloadAll()" checked/>
+            <button class="midi disabled" onclick="setMidi(this, 2)">---</button>
           </div>
           <div class="alpha">
-            <input type="text" onkeyup="if(event.keyCode == 13) reloadAll()" 
+            <div></div>
+            <input type="text" onkeyup="if(event.keyCode == 13) reMod()" 
                 placeholder="Write glsl statements in the fields. These should evaluate to floats, ideally 0-1.  Press enter to compile. Alt-<RGBA> toggles fields by color."/>
-            <input type="checkbox" id="radioAlpha" onchange="reloadAll()" checked/>
+            <input type="checkbox" id="radioAlpha" onchange="reMod()" checked/>
+            <button class="midi disabled" onclick="setMidi(this, 3)">---</button>
           </div>
         </div>
         <div id="config">
           <select id="band" onchange="selectBand(this.selectedIndex)">
-            <option style="background-color: rgb(255,220,220);">iMusic[0]</option>
-            <option style="background-color: rgb(220,255,220);">iMusic[1]</option>
-            <option style="background-color: rgb(220,220,255);">iMusic[2]</option>
-            <option style="background-color: rgb(232,232,232);">iMusic[3]</option>
+            <option style="background-color: rgb(64,64,64); color: white">iMusic[0]</option>
+            <option style="background-color: rgb(128,128,128); color: white">iMusic[1]</option>
+            <option style="background-color: rgb(192,192,192); color: black;">iMusic[2]</option>
+            <option style="background-color: rgb(255,255,255); color: black;">iMusic[3]</option>
           </select>
           <button id="template" onclick="changeTemplate(this); return false;">0123</button> 
           <span> rect:</span>
@@ -249,11 +362,16 @@
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
         </div>
-        
         <br/><br/><br/><br/>
+      </div>
+      <div id="export">
+        <textarea>
+
+        </textarea>
       </div>
       <canvas></canvas>
       <script src="../dist/clubber.js"></script>
+      <script src="../lib/transpiler.min.js"></script>
       <script src="../lib/twgl.min.js"></script>
       <script src="../lib/shader.js"></script>
       <script src="../lib/common.js"></script>

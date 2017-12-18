@@ -5,10 +5,10 @@ var descriptions = [];
 var descriptionEl = document.querySelector("#descriptions");
 function initDescriptions () {
   var el = descriptionEl;
-  for(var i=0; i< 20; i++){
+  for(var i=0; i < 20; i++){
     var el2 = document.createElement("div");
     el2.setAttribute("title", "");
-    el2.style.left = (100*i/20) + "vw";
+    el2.style.left = (100*i/25 - 2) + "vw";
     descriptions.push(el2);
     el.appendChild(el2);
   }
@@ -32,7 +32,8 @@ function changeTemplate(el) {
   }
   el.innerHTML = s;
   templates[bandIndex] = s;
-  initClubber("?");
+  initClubber("?" + genState());
+  reMod();
   updateDescriptions();
 }
 
@@ -40,11 +41,13 @@ numinputs = document.querySelectorAll("#config input");
 templateButton = document.querySelector("#config #template");
 selectEl = document.querySelector("select");
 
+var currentBand = 0;
 
 function selectBand(idx) {
   bandIndex = idx;
   selectEl.selectedIndex = idx;
-  selectEl.style.backgroundColor = ["rgb(255,220,220)", "rgb(220,255,220)","rgb(220,220,255)","rgb(232,232,232)"][idx];
+  selectEl.style.backgroundColor = selectEl.options[idx].style.backgroundColor;
+  selectEl.style.color = selectEl.options[idx].style.color;
   for(j=0;j<12;j++) {
     numinputs[j].value = [rangeArrays,smoothArrays,adaptArrays][Math.floor(j/4)][bandIndex][j&3]; 
   }
@@ -57,7 +60,7 @@ function updateBand() {
     [rangeArrays,smoothArrays,adaptArrays][Math.floor(j/4)][bandIndex][j&3] = parseFloat(numinputs[j].value); 
   }
   localStorage.setItem("clubber-config-"+bandIndex, "?"+serialize(bandIndex, true));
-  initClubber("?");
+  reMod();
 }
 
 function updateDescriptions() {
@@ -65,7 +68,7 @@ function updateDescriptions() {
     for(var j=0; j< 4; j++){
       var el = descriptions[5*i + j];
       var t = templates[i][j];
-      var h = "iMusic["+i+"]."+("xyzw"[j]);
+      var h = ("xyzw"[j]);
       el.setAttribute("title", h + " = " + (t ? DESCRIPTIONS[parseInt(t)]:"Invalid index, using strongest note"));
     }
   }
@@ -96,10 +99,26 @@ var noteTexOptions = {
 };
 
 var uniforms = {
+  iClubber: new Float32Array(4),
   iMusic: new Float32Array(16),
   iNotes: twgl.createTexture(gl, noteTexOptions),
-  iBounds: new Float32Array(16)
+  iBounds: new Float32Array(4)
 };
+
+function getChannels(inputs) {
+  var ret = {}, pf = "http://www.shadertoy.com";
+  inputs.forEach(function (ch,i) {
+    if(ch.ctype === "cubemap"){
+      var src = [pf+ch.src];
+      var prefix = ch.src.split(".")[0];
+      for(var j=1; j < 6; j++) src.push(pf + prefix + "_" + j + ".png");
+      ret["iChannel"+i] = twgl.createTexture({ target: gl.TEXTURE_CUBE_MAP, src: src });
+    } else {
+      ret["iChannel"+i] = twgl.createTexture({ src: ch.src });
+    }
+  });
+  return ret;
+}
 
 ["red", "green", "blue", "alpha"].forEach(function (s){
   var v = getParameterByName(s);
@@ -130,9 +149,9 @@ shaders.push(new Shader(gl, {
   })
 );
 
+
 var ALT = null; 
 var ALTEXT = null;
-var renderMods = true;
 
 var defaultShaders = {
   "No shader": "*",
@@ -146,7 +165,7 @@ var defaultShaders = {
 function loadShader(s) {
   var texts = [], shaders=[];
   Object.keys(defaultShaders).forEach(function(k,i){
-    texts.push(i + " " + k);
+    texts.push(i + ") " + k);
     shaders.push(defaultShaders[k]);
   });
   s = s || prompt("Provide a shadertoy url or  single digit to select from the defaults:\n\n"+texts.join("\n"), ALT ? ALT: "");
@@ -172,30 +191,30 @@ var altShader = null;
 
 var debugMode = 0;
 
-function toggleMods(el) {
-  renderMods = !renderMods;
-  if(renderMods){
+var textArea = document.querySelector("#export textarea");
+
+function toggleExport(el) {
+  
+  if(el.classList.contains("disabled")) {
+    document.querySelector("#export").style.display = "block";
     el.classList.remove("disabled");
   } else {
+    document.querySelector("#export").style.display = "none";
     el.classList.add("disabled");
   }
 }
 
 function bands(el) {
-  debugMode = (++debugMode) % 3;
+  debugMode = (++debugMode) % 2;
   octaves.classList.remove("show");
   descriptionEl.classList.remove("show");
   if(debugMode){
-    if(debugMode == 2) {
-      octaves.classList.add("show");
-    } else if(debugMode == 1){
-      descriptionEl.classList.add("show");
-    }
+    octaves.classList.add("show");
+    descriptionEl.classList.add("show");
     el.classList.remove("disabled");
   } else {
     el.classList.add("disabled");
   }
-  el.innerHTML = ["1 views", "1 bands", "1 spectrum"][debugMode];
 }
 
 function stateLink(el){
@@ -250,60 +269,36 @@ descriptionEl.addEventListener("click", handleClick);
 
 
 function reloadAll (onlyMods) {
-  reload();
   if(ALTEXT) reload(ALTEXT);
 }
 
+function reMod(){
+  ["red", "green", "blue", "alpha"].forEach(getChunk);
+  var src = toJS(genState());
+  textArea.textContent = ["function cl_"+Date.now()+"(clubber) {", src, "}"].join("\n");
+  var fn = new Function("clubber", "config", src);
+  modFn = fn(clubber);
+}
+
 function reload (alt) {
-  
-  var rtxt = getChunk("red");
-  var gtxt = getChunk("green");
-  var btxt = getChunk("blue");
-  var atxt = getChunk("alpha");
-  
   var defines = {
     "CLUBBER": "1",
-    "CLUBBER_R": rtxt,
-    "CLUBBER_G": gtxt,
-    "CLUBBER_B": btxt,
-    "CLUBBER_A": atxt
+    "CLUBBER_R": "iClubber.r",
+    "CLUBBER_G": "iClubber.g",
+    "CLUBBER_B": "iClubber.b",
+    "CLUBBER_A": "iClubber.a"
   };
   
-  var txt = [
-    "void mainImage(out vec4 color, vec2 fragCoord) {",
-    " vec2 uv = fragCoord/iResolution.xy;",
-    " vec4 fColor = vec4(0.);",
-    " vec4 fields = vec4(CLUBBER_R, CLUBBER_G, CLUBBER_B, CLUBBER_A) * 0.25;",
-    " for(float i = 0.; i < 2.; i++) {",
-    "   for(float j = 0.; j < 2.; j++) {",
-    "     vec2 center = 0.25 + vec2(mod(i, 2.0), 1.0 - mod(j,2.0)) * 0.5;",
-    "     float d = dot(abs(uv-center), vec2(1.0));",
-    "     float f1 = 1.0 - smoothstep(fields.r - fwidth(d), fields.r, d);",
-    "     float f2 = 1.0 - smoothstep(0.25 - fwidth(d), 0.25, d);",
-    "     fColor.r = (0.01 * f2 + 0.99 * f1);",
-    "     fColor.rgba = fColor.gbar;",
-    "     fields.rgba = fields.gbar;",
-    "   }",
-    " }",
-    " color.rgb = fColor.a > 0. ? vec3(fColor.a):  fColor.rgb;",
-    " if(color.r + color.g + color.b > 0.) color.rgb += 0.25;",
-    "}"
-  ].join("\n");
-  
   var s = new Shader(gl, { 
-    source: alt ?  alt: txt , 
+    source: alt.code, 
     uniforms: uniforms,
+    channels: getChannels(alt),
     defines: defines,
     correct: needsCorrection,
     ondone: function (obj) {
       if(!obj.programInfo) return;
-      if(alt){
-        if (altShader) gl.deleteProgram(altShader.programInfo.program);
-        altShader = obj; 
-      } else {
-        if (shaders[0]) gl.deleteProgram(shaders[0].programInfo.program);
-        shaders[0] = obj; 
-      }    
+      if (altShader) gl.deleteProgram(altShader.programInfo.program);
+      altShader = obj; 
     }
   });
 }
@@ -369,38 +364,100 @@ function resizeCanvasToDisplaySize(canvas, time) {
 
 window.addEventListener("resize", function () { RATIO=4; });
 
+var modFn = null;
+var editors = document.querySelectorAll("#editor > div > div");
+
+var midiConfig = [
+  {dev: null, channel: 0, ctrl: 0, id: 0},
+  {dev: null, channel: 0, ctrl: 0, id: 0},
+  {dev: null, channel: 0, ctrl: 0, id: 0},
+  {dev: null, channel: 0, ctrl: 0, id: 0}
+];
+
+function setMidi(el, id) {
+  var da = [null];
+  var sa = [
+    "Setup midi controller output, 3 arguments,  empty disables", "<DEVICE ID> <CHANNEL 1-16> <CONTROLLER 1-128>",
+    "", "Available device Ids:", "0) Disable midi"];
+  midi(function (ds) {
+    var i = 0;
+    ds.forEach(function (d) {
+      i++;
+      da.push(d);
+      sa.push(i + ") " + d.name);
+    });
+    var mc = midiConfig[id];
+    var res = prompt(sa.join("\n"), (mc.channel + 1) + " " + ( mc.ctrl+1));
+    var ra = res ? res.split(" ") : [0];
+    
+    el.textContent = "---";
+    el.classList.add("disabled");  
+  
+    if(!ra.length || ra[0] == "0") {
+      mc.dev = null; 
+      return;
+    }
+    
+    el.textContent = "000".substring(0, 3 - mc.ctrl.toString().length) +  mc.ctrl;
+    el.classList.remove("disabled");  
+  
+    mc.dev = da[parseInt(ra[0])];
+    mc.channel = ra[1] ? parseInt(ra[1]) - 1 : mc.channel;
+    mc.ctrl = ra[2] ? parseInt(ra[2]) - 1 : mc.ctrl;
+  }, false);
+}
+
+
+
 function  render(time) {
   currentTime = time;
   window.requestAnimationFrame(render);
-  if(!shaders[0]) return;
   clubber.update(time);
+  modFn(uniforms.iClubber);
   for(var i = 0; i< 4; i++){
-    var obj = data.bands[i](uniforms.iMusic, 4*i);
-    uniforms.iBounds[4 * i] = obj.from / 128;
-    uniforms.iBounds[4 * i + 1] = obj.to / 128;
-    uniforms.iBounds[4 * i + 2] = obj.low / 128;
-    uniforms.iBounds[4 * i + 3] = obj.high / 128;
+    if(i === selectEl.selectedIndex) {
+      var obj = modFn.internal.bounds[i];
+      uniforms.iBounds[0] = obj.from / 128;
+      uniforms.iBounds[1] = obj.to / 128;
+      uniforms.iBounds[2] = obj.low / 128;
+      uniforms.iBounds[3] = obj.high / 128;
+    }
+    var mc = midiConfig[i];
+    if(mc.dev) {
+      mc.dev.send([mc.channel, mc.ctrl, Math.max(0,Math.min(0, uniforms.iClubber[i])) * 255]);
+    }
+    uniforms.iMusic.set( modFn.internal.bands[i], 4 * i);
+    editors[i].style.width = (100 - 100 * uniforms.iClubber[i]) + "vw";
   }
-
   twgl.setTextureFromArray(gl, uniforms.iNotes, clubber.notes, noteTexOptions);
   data.time = time/1000;
   gl.clear(gl.COLOR_BUFFER_BIT);
   resizeCanvasToDisplaySize(gl.canvas, time);
   
-  uniforms.iResolution = [gl.canvas.width, gl.canvas.height,0];
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  var h = gl.canvas.height, w = gl.canvas.width;
+
+  uniforms.iResolution = [w, h, 0];
+  gl.viewport(0, 0, w, h);
   
-  shaders[0].transition = altShader ? 0.8 : 1;
-  if(altShader) altShader.transition = renderMods || debugMode ? 0.4 : 1;
-  if(debugMode) {
-    shaders[0].transition = 0.66;
-    shaders[debugMode].render(data, true);
-  }
-  
-  if(renderMods) shaders[0].render(data, true);
   if(altShader) altShader.render(data,true);
+  if(debugMode) {
+    gl.viewport(0,  h * 0.52, w, h * 0.25);
+    uniforms.iResolution[1] = h * 0.25;
+    uniforms.iResolution[2] = h * 0.52;
+    shaders[1].render(data, true);
+    gl.viewport(0, 0, w, h * 0.49);
+    uniforms.iResolution[1] = h * 0.49;
+    uniforms.iResolution[2] = 0;
+    shaders[2].render(data, false);
+  }
 }
 
+for(var i=0; i < 4; i++) {
+  var s = localStorage.getItem("clubber-config-"+i);
+  initClubber(s);
+}
+reMod();
+selectBand(0);
 reloadAll();
 updateDescriptions();
 soundcloud(TRACK || localStorage.getItem("soundcloud-track") || "https://soundcloud.com/draufunddran/drauf-und-dran-2eur");
