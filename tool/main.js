@@ -189,7 +189,6 @@ function loadShader(s) {
 
 if(getParameterByName("shader")){
   loadShader(getParameterByName("shader"));
-  document.getElementById("mods").onclick();
 } 
 var altShader = null;
 
