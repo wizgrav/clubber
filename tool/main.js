@@ -85,6 +85,11 @@ for(var i=0; i<11; i++){
   octaves.appendChild(el);
 }
 
+for(var i=0; i < 4; i++) {
+  var s = localStorage.getItem("clubber-config-"+i);
+  if(s) initClubber("?"+s);
+}
+
 initClubber();
 
 if (getParameterByName("reset")){
@@ -291,7 +296,7 @@ function reload (alt) {
   var s = new Shader(gl, { 
     source: alt.code, 
     uniforms: uniforms,
-    channels: getChannels(alt),
+    channels: getChannels(alt.inputs),
     defines: defines,
     correct: needsCorrection,
     ondone: function (obj) {
@@ -447,11 +452,6 @@ function  render(time) {
     uniforms.iResolution[2] = 0;
     shaders[2].render(data, false);
   }
-}
-
-for(var i=0; i < 4; i++) {
-  var s = localStorage.getItem("clubber-config-"+i);
-  if(s) initClubber("?"+s);
 }
 
 reMod();
