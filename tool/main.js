@@ -149,7 +149,6 @@ shaders.push(new Shader(gl, {
   })
 );
 
-
 var ALT = null; 
 var ALTEXT = null;
 
@@ -407,8 +406,6 @@ function setMidi(el, id) {
   }, false);
 }
 
-
-
 function  render(time) {
   currentTime = time;
   window.requestAnimationFrame(render);
@@ -454,8 +451,9 @@ function  render(time) {
 
 for(var i=0; i < 4; i++) {
   var s = localStorage.getItem("clubber-config-"+i);
-  initClubber(s);
+  if(s) initClubber("?"+s);
 }
+
 reMod();
 selectBand(0);
 reloadAll();

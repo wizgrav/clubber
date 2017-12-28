@@ -106,7 +106,7 @@
           #editor > div > button {
             z-index: 1;
             height: 2vh;
-            font-size: 1.2vh;
+            font-size: 1.6vh;
             width: 3vh;
             position: absolute;
             right: 2vh;
@@ -173,7 +173,7 @@
           #octaves div{
             font-family: monospace;
             position:absolute;
-            font-size: 2vh;
+            font-size: 1.6vh;
             color: #CCC;
             text-shadow: 1px 1px #000;
             bottom:0vh; 
@@ -256,7 +256,7 @@
             top: 0vh;
             width: 20vw;
             text-align: center;
-            font-size: 2vh;
+            font-size: 1.6vh;
             color: #CCC;
             text-shadow: 1px 1px #000;
           }
@@ -271,6 +271,16 @@
 
           body {
             background-color: black;
+          }
+
+          span {
+            font-size: 1.6vh;
+          }
+
+          select {
+            padding: 0.2vh;
+            border-radius: 0.2vh;
+            margin-left:0.2vh;
           }
         </style>
     </head>
@@ -340,10 +350,10 @@
         </div>
         <div id="config">
           <select id="band" onchange="selectBand(this.selectedIndex)">
-            <option style="background-color: rgb(64,64,64); color: white">iMusic[0]</option>
-            <option style="background-color: rgb(128,128,128); color: white">iMusic[1]</option>
-            <option style="background-color: rgb(192,192,192); color: black;">iMusic[2]</option>
-            <option style="background-color: rgb(255,255,255); color: black;">iMusic[3]</option>
+            <option style="background-color: rgb(64,64,64); color: white">$0 - iMusic[0]</option>
+            <option style="background-color: rgb(128,128,128); color: white">$1 - Music[1]</option>
+            <option style="background-color: rgb(192,192,192); color: black;">$2 - iMusic[2]</option>
+            <option style="background-color: rgb(255,255,255); color: black;">$3 - iMusic[3]</option>
           </select>
           <button id="template" onclick="changeTemplate(this); return false;">0123</button> 
           <span> rect:</span>

@@ -1,6 +1,6 @@
 /* 
-* clubber.js 1.7.0 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
-* Available via the MIT license. Check http://github.com/wizgrav/clubber for info.
+* clubber.js 1.7.1 Copyright (c) 2016-2017, Yannis Gravezas All Rights Reserved.
+* Available under the MIT license. See http://github.com/wizgrav/clubber for info.
 */
 
 var Clubber = function (config) {
@@ -19,6 +19,15 @@ var Clubber = function (config) {
     },
     set: function(value) {
       analyser.smoothingTimeConstant = value;
+    }
+  });
+
+  Object.defineProperty(this, 'fftSize', {
+    get: function() {
+      return analyser.fftSize;
+    },
+    set: function(value) {
+      analyser.fftSize = value;
     }
   });
 
@@ -41,10 +50,15 @@ var Clubber = function (config) {
       }
     }
   });
+
+  Object.defineProperty(this, 'sampleRate', {
+    get: function() {
+      return this.context.sampleRate;
+    }
+  });
   
   this.analyser = analyser;
-  this.rate = config.rate || this.context.sampleRate;
-  
+
   this.resize(analyser.frequencyBinCount);
 
   this.muted = !!config.mute;
@@ -64,7 +78,7 @@ Clubber.prototype.resize = function(bins) {
   this.notes = new Uint8Array(128);
   this.weights = new Uint8Array(128);
   
-  for(var i = 0, inc=(this.rate/2)/this.bufferLength; i < this.bufferLength;i++){
+  for(var i = 0, inc=(this.sampleRate/2)/this.bufferLength; i < this.bufferLength;i++){
     var freq = (i+0.5)*inc;
     this.maxBin = i;
     if(freq > 13280) {
@@ -261,7 +275,7 @@ Clubber.prototype.update =  function (time, data, isProcessed) {
   var c = this.cache, self=this;
   
   if (data) {
-    if(isProcessed) {
+    if(isProcessed || data.length === 128) {
         this.notes.set(data);
         return;
     }
@@ -270,6 +284,7 @@ Clubber.prototype.update =  function (time, data, isProcessed) {
     this.analyser.getByteFrequencyData(this.data);
     isProcessed = false;
     data = this.data;
+    this.resize(this.analyser.frequencyBinCount);
   }
 
   // Calculate energy per midi note and fill holes in the lower octaves
