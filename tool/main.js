@@ -380,8 +380,8 @@ var midiConfig = [
 function setMidi(el, id) {
   var da = [null];
   var sa = [
-    "Setup midi controller output, 3 arguments,  empty disables", "<DEVICE ID> <CHANNEL 1-16> <CONTROLLER 1-128>",
-    "", "Available device Ids:", "0) Disable midi"];
+    "Setup midi controller output, 3 arguments,  empty disables", "<DEVICE ID> <CHANNEL 0-15> <CONTROLLER 0-127>",
+    "", "Available device IDs:", "0) Disable midi"];
   midi(function (ds) {
     var i = 0;
     ds.forEach(function (d) {
@@ -390,7 +390,7 @@ function setMidi(el, id) {
       sa.push(i + ") " + d.name);
     });
     var mc = midiConfig[id];
-    var res = prompt(sa.join("\n"), (mc.channel + 1) + " " + ( mc.ctrl+1));
+    var res = prompt(sa.join("\n"), mc.id + " " + (mc.channel) + " " + ( mc.ctrl));
     var ra = res ? res.split(" ") : [0];
     
     el.textContent = "---";
@@ -401,12 +401,15 @@ function setMidi(el, id) {
       return;
     }
     
+    
+    mc.id = parseInt(ra[0]);
+    mc.dev = da[mc.id];
+    mc.channel = ra[1] ? parseInt(ra[1]) : mc.channel;
+    mc.ctrl = ra[2] ? parseInt(ra[2]) : mc.ctrl;
+    
     el.textContent = "000".substring(0, 3 - mc.ctrl.toString().length) +  mc.ctrl;
     el.classList.remove("disabled");  
   
-    mc.dev = da[parseInt(ra[0])];
-    mc.channel = ra[1] ? parseInt(ra[1]) - 1 : mc.channel;
-    mc.ctrl = ra[2] ? parseInt(ra[2]) - 1 : mc.ctrl;
   }, false);
 }
 
@@ -425,7 +428,7 @@ function  render(time) {
     }
     var mc = midiConfig[i];
     if(mc.dev) {
-      mc.dev.send([mc.channel, mc.ctrl, Math.max(0,Math.min(0, uniforms.iClubber[i])) * 255]);
+      mc.dev.send([176 + mc.channel, mc.ctrl, Math.max(0,Math.min(1, uniforms.iClubber[i])) * 127]);
     }
     uniforms.iMusic.set( modFn.internal.bands[i], 4 * i);
     editors[i].style.width = (100 - 100 * uniforms.iClubber[i]) + "vw";
