@@ -142,15 +142,17 @@ function getChunk(s) {
 
 shaders.push(new Shader(gl, { 
     source: load("../assets/shaders/debug.fs"), 
-    uniforms: uniforms, 
-    correct: false
+    uniforms: uniforms,
+    correct: false,
+    debug: true
   })
 );
 
 shaders.push(new Shader(gl, { 
     source: load("../assets/shaders/spectrum.fs"), 
     uniforms: uniforms, 
-    correct: false
+    correct: false,
+    debug: true,
   })
 );
 
@@ -448,12 +450,12 @@ function  render(time) {
     gl.viewport(0,  h * 0.52, w, h * 0.25);
     uniforms.iResolution[1] = h * 0.25;
     uniforms.iResolution[2] = h * 0.52;
-    shaders[1].transition = altShader ? 0.99 : 1;
+    shaders[1].transition = altShader ? 0.66 : 1.0;
     shaders[1].render(data, true);
     gl.viewport(0, 0, w, h * 0.49);
     uniforms.iResolution[1] = h * 0.49;
     uniforms.iResolution[2] = 0;
-    shaders[2].transition = altShader ? 0.99 : 1;
+    shaders[2].transition = altShader ? 0.66 : 1.0;
     shaders[2].render(data, false);
   }
 }

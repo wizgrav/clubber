@@ -160,7 +160,7 @@
           #octaves {
             position: relative;
             display: none;
-            height: 47.5vh;
+            height: 47.2vh;
             margin-top: 44.5vh;
             width: 99%;
             margin: 0;
@@ -307,7 +307,6 @@
         <button onclick="change()" >4 audio</button>
         <button onclick="loadShader()">5 shader</button>
         <button onclick="toggleExport(this)" class="disabled">6 code</button>
-        <button class="midi disabled" onclick="toggleMidi(this)">7 midi</button>
       </div>
         <a style="color: rgb(220, 220, 255);" id="source" onmouseenter="sourceLink(this)" href="" target="_blank"
           title="Go to the shader's source on ShaderToy.">Shader&nbsp;</a>
@@ -325,27 +324,27 @@
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()"
             value="length(iMusic[0].yz) * min(iMusic[0].w, iMusic[1].w)" />
             <input type="checkbox" onchange="reMod()" checked/>
-            <button class="midi disabled" onclick="setMidi(this, 0)">---</button>
+            <button title="midi out" class="midi disabled" onclick="setMidi(this, 0)">---</button>
           </div>
           <div class="green">
             <div></div>
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()"
             value="mix(iMusic[3].w, iMusic[3].z, iMusic[2].y)"/>
             <input type="checkbox" onchange="reMod()" checked/>
-            <button class="midi disabled" onclick="setMidi(this, 1)">---</button>
+            <button title="midi out" class="midi disabled" onclick="setMidi(this, 1)">---</button>
           </div>
           <div class="blue">
             <div></div>
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()" />
             <input type="checkbox" onchange="reloadAll()" checked/>
-            <button class="midi disabled" onclick="setMidi(this, 2)">---</button>
+            <button title="midi out" class="midi disabled" onclick="setMidi(this, 2)">---</button>
           </div>
           <div class="alpha">
             <div></div>
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()" 
                 placeholder="Write glsl statements in the fields. These should evaluate to floats, ideally 0-1.  Press enter to compile. Alt-<RGBA> toggles fields by color."/>
             <input type="checkbox" id="radioAlpha" onchange="reMod()" checked/>
-            <button class="midi disabled" onclick="setMidi(this, 3)">---</button>
+            <button title="midi out" class="midi disabled" onclick="setMidi(this, 3)">---</button>
           </div>
         </div>
         <div id="config">
