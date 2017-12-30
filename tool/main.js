@@ -285,7 +285,7 @@ function reMod(){
     "// var clubber = new Clubber();",
     "// var updater = cl_"+uniq+"(clubber);",
     "// clubber.update();",
-    "// updater(arrayToFillWithModulatorValues)",
+    "// updater(arrayToFillWithModulatorValues);",
     "",
     "function cl_"+uniq+"(clubber) {", 
     src, 

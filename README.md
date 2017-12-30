@@ -13,7 +13,7 @@ A set of meaningful measurements are produced in a form suitable for direct use 
 
 [Clubber Tool](http://wizgrav.github.io/clubber/tool) - A web app for making awesome audio reactive visualizations. It's also a first class tool for music analysis and, probably, the most advanced sidechaining mechanism you could hope for.
 
-[Check the documentation for the tool](https://github.com/wizgrav/clubber/tool)
+[Check the documentation for the tool](https://github.com/wizgrav/clubber/tree/master/tool)
 
 Some example patches for your audiovisual enjoyment: 
 
