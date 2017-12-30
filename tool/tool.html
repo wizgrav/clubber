@@ -106,8 +106,8 @@
           #editor > div > button {
             z-index: 1;
             height: 2vh;
-            font-size: 1.6vh;
-            width: 3vh;
+            font-size: 1.5vh;
+            width: 4vh;
             position: absolute;
             right: 2vh;
             background-color: grey;
@@ -314,7 +314,7 @@
           placeholder="This link's adress contains the whole current state of the tool"
           title="Copy and store this link's url for a full snapshot of the current state."
           >State&nbsp;</a>
-        <a style="color: rgb(255,220,220);" href="https://www.github.com/wizgrav/clubber" target="_blank">Github&nbsp;</a>
+        <a style="color: rgb(255,220,220);" href="https://www.github.com/wizgrav/clubber" target="_blank">About&nbsp;</a>
         <div id="info"></div>
         
         
@@ -324,27 +324,27 @@
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()"
             value="length(iMusic[0].yz) * min(iMusic[0].w, iMusic[1].w)" />
             <input type="checkbox" onchange="reMod()" checked/>
-            <button title="midi out" class="midi disabled" onclick="setMidi(this, 0)">---</button>
+            <button title="midi out" class="midi disabled" onclick="setMidi(this, 0)">MIDI</button>
           </div>
           <div class="green">
             <div></div>
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()"
             value="mix(iMusic[3].w, iMusic[3].z, iMusic[2].y)"/>
             <input type="checkbox" onchange="reMod()" checked/>
-            <button title="midi out" class="midi disabled" onclick="setMidi(this, 1)">---</button>
+            <button title="midi out" class="midi disabled" onclick="setMidi(this, 1)">MIDI</button>
           </div>
           <div class="blue">
             <div></div>
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()" />
             <input type="checkbox" onchange="reloadAll()" checked/>
-            <button title="midi out" class="midi disabled" onclick="setMidi(this, 2)">---</button>
+            <button title="midi out" class="midi disabled" onclick="setMidi(this, 2)">MIDI</button>
           </div>
           <div class="alpha">
             <div></div>
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()" 
                 placeholder="Write glsl statements in the fields. These should evaluate to floats, ideally 0-1.  Press enter to compile. Alt-<RGBA> toggles fields by color."/>
             <input type="checkbox" id="radioAlpha" onchange="reMod()" checked/>
-            <button title="midi out" class="midi disabled" onclick="setMidi(this, 3)">---</button>
+            <button title="midi out" class="midi disabled" onclick="setMidi(this, 3)">MIDI</button>
           </div>
         </div>
         <div id="config">

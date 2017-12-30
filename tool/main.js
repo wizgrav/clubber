@@ -280,7 +280,17 @@ function reloadAll (onlyMods) {
 function reMod(){
   ["red", "green", "blue", "alpha"].forEach(getChunk);
   var src = toJS(genState());
-  textArea.textContent = ["function cl_"+Date.now()+"(clubber) {", src, "}"].join("\n");
+  var uniq = Date.now();
+  textArea.textContent = [
+    "// var clubber = new Clubber();",
+    "// var updater = cl_"+uniq+"(clubber);",
+    "// clubber.update();",
+    "// updater(arrayToFillWithModulatorValues)",
+    "",
+    "function cl_"+uniq+"(clubber) {", 
+    src, 
+    "}"
+  ].join("\n");
   var fn = new Function("clubber", "config", src);
   modFn = fn(clubber);
 }
@@ -373,17 +383,20 @@ var modFn = null;
 var editors = document.querySelectorAll("#editor > div > div");
 
 var midiConfig = [
-  {dev: null, channel: 0, ctrl: 0, id: 0},
-  {dev: null, channel: 0, ctrl: 0, id: 0},
-  {dev: null, channel: 0, ctrl: 0, id: 0},
-  {dev: null, channel: 0, ctrl: 0, id: 0}
+  {dev: null, channel: 0, ctrl: 0, min: 0, max: 127, id: 0},
+  {dev: null, channel: 0, ctrl: 0, min: 0, max: 127, id: 0},
+  {dev: null, channel: 0, ctrl: 0, min: 0, max: 127, id: 0},
+  {dev: null, channel: 0, ctrl: 0, min: 0, max: 127, id: 0}
 ];
 
 function setMidi(el, id) {
   var da = [null];
   var sa = [
-    "Setup midi controller output, 3 arguments,  empty disables", "<DEVICE ID> <CHANNEL 0-15> <CONTROLLER 0-127>",
-    "", "Available device IDs:", "0) Disable midi"];
+    "Setup midi controller output for this field", 
+    "",
+    "Accepts 5, space separated, integer arguments",
+    "<ID> <CHANNEL 0-15> <CTRL 0-127> <MIN 0-127> <MAX 0-127>",
+    "", "Available device IDs:", "0) Disable midi output"];
   midi(function (ds) {
     var i = 0;
     ds.forEach(function (d) {
@@ -392,10 +405,10 @@ function setMidi(el, id) {
       sa.push(i + ") " + d.name);
     });
     var mc = midiConfig[id];
-    var res = prompt(sa.join("\n"), mc.id + " " + (mc.channel) + " " + ( mc.ctrl));
+    var res = prompt(sa.join("\n"), [mc.id, mc.channel, mc.ctrl, mc.min, mc.max].join(" ") );
     var ra = res ? res.split(" ") : [0];
     
-    el.textContent = "---";
+    el.textContent = "MIDI";
     el.classList.add("disabled");  
   
     if(!ra.length || ra[0] == "0") {
@@ -406,12 +419,18 @@ function setMidi(el, id) {
     
     mc.id = parseInt(ra[0]);
     mc.dev = da[mc.id];
+
+    if(!mc.dev) return;
+
     mc.channel = ra[1] ? parseInt(ra[1]) : mc.channel;
     mc.ctrl = ra[2] ? parseInt(ra[2]) : mc.ctrl;
+    mc.min = ra[3] ? parseInt(ra[3]) : mc.min;
+    mc.max = ra[4] ? parseInt(ra[4]) : mc.max;
     
-    el.textContent = "000".substring(0, 3 - mc.ctrl.toString().length) +  mc.ctrl;
-    el.classList.remove("disabled");  
-  
+    el.textContent = mc.ctrl;
+    el.title = ["Device" + mc.dev.name,  "Channel: " + mc.channel, "Ctrl: " + mc.ctrl].join(", ");
+
+    el.classList.remove("disabled");
   }, false);
 }
 
@@ -429,8 +448,14 @@ function  render(time) {
       uniforms.iBounds[3] = obj.high / 128;
     }
     var mc = midiConfig[i];
+
+    function midiMix(minVal, maxVal, val) {
+      val = Math.max(0,Math.min(1, val));
+      return minVal * (1 - val) + maxVal * val;
+    }
+
     if(mc.dev) {
-      mc.dev.send([176 + mc.channel, mc.ctrl, Math.max(0,Math.min(1, uniforms.iClubber[i])) * 127]);
+      mc.dev.send([176 + mc.channel, mc.ctrl, midiMix(mc.min, mc.max, uniforms.iClubber[i])]);
     }
     uniforms.iMusic.set( modFn.internal.bands[i], 4 * i);
     editors[i].style.width = (100 - 100 * uniforms.iClubber[i]) + "vw";
@@ -450,12 +475,12 @@ function  render(time) {
     gl.viewport(0,  h * 0.52, w, h * 0.25);
     uniforms.iResolution[1] = h * 0.25;
     uniforms.iResolution[2] = h * 0.52;
-    shaders[1].transition = altShader ? 0.66 : 1.0;
+    shaders[1].transition = altShader ? 0.7 : 1.0;
     shaders[1].render(data, true);
     gl.viewport(0, 0, w, h * 0.49);
     uniforms.iResolution[1] = h * 0.49;
     uniforms.iResolution[2] = 0;
-    shaders[2].transition = altShader ? 0.66 : 1.0;
+    shaders[2].transition = altShader ? 0.9 : 1.0;
     shaders[2].render(data, false);
   }
 }

@@ -3,20 +3,27 @@ clubber
 
 ![Clubber tool screenshot](https://wizgrav.github.io/clubber/screen.png)
 
-A javascript library to analyze the frequency data from audio sources and extract the underlying rhythmic information. Instead of a linear distribution, frequency energies are collected in midi note bins which music theory suggests to be a better segregation for music audio. A small collection of meaningful measurements are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of visualisations that react pleasantly to the audio.
+This lib analyzes the frequency data from audio sources and extracts the underlying rhythmic information. The linear frequency energies are converted into midi notes which music theory suggests to be a better segregation for music audio. 
+
+A set of meaningful measurements are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of awesome audio reactive visualisations.
 
 [A short introduction to the music vectorization technique on Medium.com](https://medium.com/@wizgrav/music-reactive-visualizations-924df006f2ae#.6z10i27c1)
 
-[ClubberToy](http://wizgrav.github.io/clubber/) - A collection of several rewired shadertoys as a vjing tool. 
+[ClubberToy](http://wizgrav.github.io/clubber/) - A collection of several rewired shadertoys as a vjing tool(Currently getting refactored). 
 
-[Clubber Tool](http://wizgrav.github.io/clubber/tool) - Make awesome audio reactive visualizations on the spot. 
+[Clubber Tool](http://wizgrav.github.io/clubber/tool) - A web app for making awesome audio reactive visualizations. It's also a first class tool for music analysis and, probably, the most advanced sidechaining mechanism you could hope for.
 
-Example patches made with the tool: 
+[Check the documentation for the tool](https://github.com/wizgrav/clubber/tool)
 
+Some example patches for your audiovisual enjoyment: 
+
+[Imperial Sea]()
+
+Older but still good:
 [Sea, Sun & Zorba](https://goo.gl/7tDFmr), [Cubes & Roses](https://goo.gl/411PTg), [Electro Fractal Land](https://goo.gl/9yBZnJ), [Bello Electro](https://goo.gl/VTGmz7), [Boom Generators](https://goo.gl/XH88Gf)
 
 
-[Clubberize](https://github.com/wizgrav/clubberize) - A helper lib to utilize the tool's modulators in js apps, webgl or other.
+[Clubberize](https://github.com/wizgrav/clubberize) - A helper lib to utilize the tool's modulators in js apps, webgl or other.(Kind of obsolete now since the tool can export its state in pure javascript)
 
 
 ### Usage ###
@@ -81,7 +88,7 @@ The output can be customized with the **template** property. This accepts a stri
 * 8 - Adaptive low threshold relative to absolute limits 
 * 9 - Adaptive high threshold relative to absolute limits
 
-If a **template** is not specified it defaults is **0123**, the first four measurements from the collection. The length of the string | array provided as the template defines the size of the resulting vector and the internally used Float32Array.
+If a **template** is not specified it defaults is **0123**, the first four measurements from the set. The length of the string | array provided as the template defines the size of the resulting vector and the internally used Float32Array.
 
 Bands also provide exponential smoothing for the measurements which is controlled by the **smooth** option. This takes an element array of normalized floats, same length as the template property, to use as factors for the smoothing of each respective measurement. A value of 1 means instant change and as it goes down to 0 it smooths more. 
 
@@ -99,9 +106,11 @@ var band = clubber.band({ // clubber here is the instantiated object from above
     snap: 0.33
 });
 
-clubber.update(); // This should happen first for frequency data to be current for all bands
+// This should happen first for the frequency data to be current
+// Time is optional but is useful for performing offline analysis
+clubber.update(currentTimeInMs); 
 
-// Calling the closures updates a provided object which can be Float32Array|Array|Three.VectorX
+// Calling the closures fills the provided object which can be Float32Array|Array|Three.VectorX
 var bounds = band(vec4Object); // Returns object with from to low high bounds of the adapted window
 
 ```
@@ -123,7 +132,7 @@ Sometimes the audio source maybe located away from the box doing the presentatio
 
 ```javascript
 
-// The third(true) argument indicates that the data are already in midi space
+// The third(true) argument indicates that the data are already converted to midi space
 clubber.update(time, noteArray, true); 
 
 ```
@@ -142,34 +151,7 @@ And since we're dealing with vectors why not just measure their distances or eve
 
 You can also tune smoothing via Clubber.smoothing which is a shortcut for the internal analyser's smoothingTimeConstant(the web audio default is 0.8 and is quite sensitive).
 
-### Clubber Tool ###
 
-This web app is meant to assist in the design of modulators. 4 bands are provided by default and accessed in a shader via the iMusic[0-3] vec4 uniforms. The 4 text input fields allow writing glsl expressions to play with the measurements and inspect the resulting modulations in the form of RGBA shapes(A is white). The views button cycles through two extra views, one with all the measurements from the 4 objects and also a midi spectrogram where you can see the current bounds for each band/rect(useful for live inspection of the adapt option).
-
-You can change band configuration through the form with the numeric inputs or by passing query arguments to the tool url. Arguments should be in the form of a single letter and a number 0-3 to indicate iMusic[0-3] respectively. So for example ?t0=4567 would override the template of iMusic[0]. ?r0=1,24,32,96 would change the bounds (from, to, low, high). ?s0=0.2,0.1,0.2,0.2 would override the smooth option array. ?a0=0.33,0.1,1,1 would override the adapt option array.
-
-The current soundcloud track, glsl field values and band config will be persisted among page reloads in localStorage. If you want to reset to the defaults you can pass a **?reset=1** argument to the url.
-
-If a shadertoy hash/url is provided, it will be fetched and rendered, and it can be made to interact with modulators as well. Not all shadertoys work yet and those that do must have a special define block to allow wiring the mods in:
-
-```cpp
-
-#ifndef CLUBBER
-vec4 iMusic[4];
-const float iTransition = 1.0;
-#define CLUBBER_R 0.0
-#define CLUBBER_G 0.0
-#define CLUBBER_B 0.0
-#define CLUBBER_A 0.0
-#endif
-
-```
-
-When in the context of clubber, The CLUBBER_X defines will have the expressions from the tool's fields. These must evaluate to a single float each, ideally 0-1. In the shadertoy editor, you can place these in the shader wherever they make sense as modulators and place some appropriate defaults in the CLUBBER_X defines on the shader text.
-
-At any point, you can copy the address of the **State** link to get a full snapshot of the current state of the tool contained in a long url. Band configs, glsl snippets, current track and shader are all serialized so this url is essentially a self contained music vis patch that can be easily stored and shared.
-
-if you'd like to use the modulators you designed in your own js apps, webgl or other, check [Clubberize](https://github.com/wizgrav/clubberize). This will allow you to reuse the patches made in clubber tool within your own applications.
 
 ### Clubber in the wild ###
 
