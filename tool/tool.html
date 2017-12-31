@@ -93,7 +93,9 @@
             height:1.6vh;
             position:absolute;
             right:0;
-            top:0.66vh;
+            top: 0;
+            bottom: 0;
+            margin:auto;
           }
 
           input[type=number] {
@@ -105,16 +107,17 @@
 
           #editor > div > button {
             z-index: 1;
-            height: 2vh;
-            font-size: 1.5vh;
-            width: 4vh;
+            height: 1.8vh;
+            font-size: 1.2vh;
+            width: 3.33vh;
             position: absolute;
             right: 2vh;
-            background-color: grey;
-            top: 0.1vh;
+            top: 0;
             padding: 0;
-            border-radius: 0.66vh;
+            border-radius: 0.33vh;
             border: none;
+            bottom: 0;
+            margin: auto;
           }
 
           #editor div.red input[type=text]{
@@ -336,7 +339,7 @@
           <div class="blue">
             <div></div>
             <input type="text" onkeyup="if(event.keyCode == 13) reMod()" />
-            <input type="checkbox" onchange="reloadAll()" checked/>
+            <input type="checkbox" onchange="reMod()" checked/>
             <button title="midi out" class="midi disabled" onclick="setMidi(this, 2)">MIDI</button>
           </div>
           <div class="alpha">

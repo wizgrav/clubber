@@ -71,7 +71,7 @@ button {
  button.disabled {
   background-color: #000;
   color: white;
-  opacity:0.66;
+  opacity:0.5;
 }
 button:hover {
   background-color: white;

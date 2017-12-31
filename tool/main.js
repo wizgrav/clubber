@@ -136,7 +136,8 @@ var TRACK = getParameterByName("track");
 function getChunk(s) {
   var v = document.querySelector("div." + s + " input[type=text]").value;
   var c = document.querySelector("div." + s + " input[type=checkbox]").checked;
-  if ( v ) localStorage.setItem("clubber-tool-"+s, v); else localStorage.removeItem("clubber-tool-"+s); 
+  if ( v ) localStorage.setItem("clubber-tool-"+s, v); else localStorage.removeItem("clubber-tool-"+s);
+  midiConfig[["red", "green", "blue", "alpha"].indexOf(s)].enabled = c;
   return v && c ? v : "0.0";
 }
 
@@ -389,7 +390,7 @@ var midiConfig = [
   {dev: null, channel: 0, ctrl: 0, min: 0, max: 127, id: 0}
 ];
 
-function setMidi(el, id) {
+function setMidi(el, id, pres) {
   var da = [null];
   var sa = [
     "Setup midi controller output for this field", 
@@ -405,12 +406,15 @@ function setMidi(el, id) {
       sa.push(i + ") " + d.name);
     });
     var mc = midiConfig[id];
-    var res = prompt(sa.join("\n"), [mc.id, mc.channel, mc.ctrl, mc.min, mc.max].join(" ") );
+    var res = pres || prompt(sa.join("\n"), [mc.id, mc.channel, mc.ctrl, mc.min, mc.max].join(" ") );
     var ra = res ? res.split(" ") : [0];
     
+    var parentClass = el.parentNode.classList.value;
+
     el.textContent = "MIDI";
     el.classList.add("disabled");  
-  
+    localStorage.removeItem("midi-" + parentClass);
+
     if(!ra.length || ra[0] == "0") {
       mc.dev = null; 
       return;
@@ -428,11 +432,22 @@ function setMidi(el, id) {
     mc.max = ra[4] ? parseInt(ra[4]) : mc.max;
     
     el.textContent = mc.ctrl;
-    el.title = ["Device" + mc.dev.name,  "Channel: " + mc.channel, "Ctrl: " + mc.ctrl].join(", ");
+    el.title = [
+      "DEV: " + mc.dev.name,  
+      "CHAN: " + mc.channel, 
+      "CTRL: " + mc.ctrl,
+      "RANGE: " + mc.min + " - " + mc.max
+    ].join(", ");
 
     el.classList.remove("disabled");
+    localStorage.setItem("midi-" + parentClass, [mc.id, mc.channel, mc.ctrl, mc.min, mc.max].join(" "));
   }, false);
 }
+
+["red", "green", "blue", "alpha"].forEach(function (s, i) {
+  var ms = localStorage.getItem("midi-"+s);
+  if(ms) { setMidi(document.querySelector("#editor > div."+s+" > button"), i, ms); }
+});
 
 function  render(time) {
   currentTime = time;
@@ -454,7 +469,7 @@ function  render(time) {
       return minVal * (1 - val) + maxVal * val;
     }
 
-    if(mc.dev) {
+    if(mc.dev && mc.enabled) {
       mc.dev.send([176 + mc.channel, mc.ctrl, midiMix(mc.min, mc.max, uniforms.iClubber[i])]);
     }
     uniforms.iMusic.set( modFn.internal.bands[i], 4 * i);
