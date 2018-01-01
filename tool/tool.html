@@ -352,23 +352,23 @@
         </div>
         <div id="config">
           <select id="band" onchange="selectBand(this.selectedIndex)">
-            <option style="background-color: rgb(64,64,64); color: white">$0 - iMusic[0]</option>
-            <option style="background-color: rgb(128,128,128); color: white">$1 - Music[1]</option>
-            <option style="background-color: rgb(192,192,192); color: black;">$2 - iMusic[2]</option>
-            <option style="background-color: rgb(255,255,255); color: black;">$3 - iMusic[3]</option>
+            <option style="background-color: rgb(64,64,64); color: white">iMusic[0] -  $0</option>
+            <option style="background-color: rgb(128,128,128); color: white">iMusic[1] - $1</option>
+            <option style="background-color: rgb(192,192,192); color: black;">iMusic[2] - $2</option>
+            <option style="background-color: rgb(255,255,255); color: black;">iMusic[3] - $3</option>
           </select>
           <button id="template" onclick="changeTemplate(this); return false;">0123</button> 
-          <span> rect:</span>
+          <span> Bounds:</span>
           <input type="number" min="0" max="127" step="1" onchange="updateBand()"/>
           <input type="number" min="0" max="127" step="1" onchange="updateBand()"/>
           <input type="number" min="0" max="127" step="1" onchange="updateBand()"/>
           <input type="number" min="0" max="127" step="1" onchange="updateBand()"/>
-          <span> smooth:</span>
+          <span> Smooth:</span>
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
-          <span> adapt:</span>
+          <span> Adapt:</span>
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>
           <input type="number" min="-1" max="1" step="0.01" onchange="updateBand()"/>

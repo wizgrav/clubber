@@ -1,29 +1,28 @@
-clubber
+Clubber
 ========
 
 ![Clubber tool screenshot](https://wizgrav.github.io/clubber/screen.png)
 
-This lib analyzes the frequency data from audio sources and extracts the underlying rhythmic information. The linear frequency energies are converted into midi notes which music theory suggests to be a better segregation for music audio. 
+This small js library listens to audio sources and extracts the underlying rhythmic information. The linear frequency energies are converted into midi notes which music theory suggests to be a better segregation for music audio. 
 
 A set of meaningful measurements are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of awesome audio reactive visualisations.
 
+
+[Clubber Tool](http://wizgrav.github.io/clubber/tool) - A web app for prototyping audio reactive visualizations. This is the best place to start playing around with clubber as it can export the patches you create for use in your own applications. It also happens to be a first class tool for music analysis and thanks to web midi output a very advanced sidechaining mechanism. This can come handy for driving parameters on external software, ranging from djing and music production to driving visuals. Everything that accepts midi control change messages basically.
+
+[Documentation for the tool](https://github.com/wizgrav/clubber/tree/master/tool)
+
 [A short introduction to the music vectorization technique on Medium.com](https://medium.com/@wizgrav/music-reactive-visualizations-924df006f2ae#.6z10i27c1)
-
-[ClubberToy](http://wizgrav.github.io/clubber/) - A collection of several rewired shadertoys as a vjing tool(Currently getting refactored). 
-
-[Clubber Tool](http://wizgrav.github.io/clubber/tool) - A web app for making awesome audio reactive visualizations. It's also a first class tool for music analysis and, probably, the most advanced sidechaining mechanism you could hope for.
-
-[Check the documentation for the tool](https://github.com/wizgrav/clubber/tree/master/tool)
 
 Some example patches for your audiovisual enjoyment: 
 
-[Imperial Sea]()
+[Imperial Sea](https://goo.gl/p4HwTH)
 
 Older but still good:
 [Sea, Sun & Zorba](https://goo.gl/7tDFmr), [Cubes & Roses](https://goo.gl/411PTg), [Electro Fractal Land](https://goo.gl/9yBZnJ), [Bello Electro](https://goo.gl/VTGmz7), [Boom Generators](https://goo.gl/XH88Gf)
 
 
-[Clubberize](https://github.com/wizgrav/clubberize) - A helper lib to utilize the tool's modulators in js apps, webgl or other.(Kind of obsolete now since the tool can export its state in pure javascript)
+[Clubberize](https://github.com/wizgrav/clubberize) - A helper lib to utilize the tool's modulators in js apps, webgl or other.(Mostly obsolete now since the tool can export its state in pure javascript)
 
 
 ### Usage ###
@@ -54,7 +53,7 @@ require('clubber')
 
 ### Instructions ###
 
-First we instantiate a Clubber object and have it listen to an audio element. When we need to process a fresh set of audio samples we call Clubber.update(), usually once per render iteration.
+First we instantiate a Clubber object and have it listen to an audio element. When we need to process a fresh set of audio samples we call Clubber.update(). This will usually need to be performed once per render iteration when live or when a new buffer is available when offline. Mind that in the later case the appropriate time needs to be provided manually to clubber.update(time). That time should be an incrementing sum of 1000 * <bufferSize>/<sampleRate>
 
 ```javascript
 var clubber = new Clubber({
@@ -65,8 +64,8 @@ var clubber = new Clubber({
 // Specify the audio source to analyse. Can be an audio/video element or an instance of AudioNode.
 clubber.listen(audioSource); 
 
-clubber.update(currentTime); // currentTime is optional and specified in ms.
-console.log(clubber.notes); // array containing the audio energy per midi note.
+clubber.update(currentTime); // currentTime is optional and specified in milliseconds.
+console.log(clubber.notes); // This is the array containing the audio energy per midi note.
 ```
 
 The energy per midi note will be contained in the Clubber.notes array. A mechanism for analysis is provided by the library called 'bands'. These are implemented as closures that, when called, will process the current note energies and update Float32Arrays | Arrays | THREE.VectorX objects passed as the first argument, with the second argument being an offset for the case when arrays are used. Their output data can be passed directly to webgl shaders as vecs. The data coming out are readily usable as modulators but they can also be aggregated through time for more elaborate transitions etc. 
@@ -137,20 +136,17 @@ clubber.update(time, noteArray, true);
 
 ```
 
-There's no need to listen to anything on the rendering box in this case. You just create and use bands as usual. Time is optional and you can just provide it with a null value to use the internal clock.
+There's no need to listen to anything on the rendering box in this case. You just create and use bands as usual. Time is optional and you can just provide it with a null value to use performance.now() internally.
 
 ### Tips ###
 
 Usually one would instantiate several bands, each covering a range of midi notes, low mid high etc, calling them every render iteration and passing the returned arrays/vec4s as uniforms to modulate webgl shaders. Other uses are equally easy, just pick and use elements from the arrays as needed.
 
-By creatively combining the results of the analysis, the rhythmic patterns in the music will emerge in the graphics as well. Simple combinations could be finding the min/max between adjacent band notes/energies or multiply/sub them.
+By creatively combining the results of the analysis, the rhythmic patterns in the music will emerge in the graphics as well. Simple combinations could be finding the min/max between adjacent band notes/energies or multiply/sub them. 
 
 A strategy that works well would be to interpret the analysis results as vectors and operate on these. For instance map a bands strongest note on the x axis, the average note on the Y axis and calculate the length of the vector. You can go further and combine notes with powers and elements from different bands/rects. 
 
-And since we're dealing with vectors why not just measure their distances or even dot them and see what comes out(Good stuff :) These combinations are all plausible, you can check some of them in the glsl demos that come with the source. You can also experiment on your own and design your modulators in this [very helpful tool](http://wizgrav.github.io/clubber/tool).
-
-You can also tune smoothing via Clubber.smoothing which is a shortcut for the internal analyser's smoothingTimeConstant(the web audio default is 0.8 and is quite sensitive).
-
+And since we're dealing with vectors why not just measure their distances or even dot them to calculate the angle beetween them and see what comes out(Good stuff :) These combinations are all plausible, you can check some of them in the glsl demos that come with the source. You can also experiment on your own and design your modulators in this [very helpful tool](http://wizgrav.github.io/clubber/tool). If you come up with something good, please consider sharing.
 
 
 ### Clubber in the wild ###
