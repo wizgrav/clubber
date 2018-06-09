@@ -1,6 +1,105 @@
 
 var DESCRIPTIONS = Clubber.prototype.descriptions;
 
+var cmExport = CodeMirror.fromTextArea(document.querySelector("#export textarea"), {
+    extraKeys: {"Ctrl-Space": "autocomplete"},
+    lineNumbers: true,
+    lineWrapping: true,
+    mode: "javascript"
+});
+
+cmExport.setSize("100vw", "100%");
+
+window.setTimeout(function () {document.querySelector("#export").style.display="none";}, 0);
+
+
+var glslBuiltins = ("radians degrees sin cos tan asin acos atan pow sinh cosh tanh asinh acosh atanh " +
+    "exp log exp2 log2 sqrt inversesqrt abs sign floor ceil round trunc fract mod modf " +
+    "min max clamp mix step smoothstep length distance dot cross " +
+    "inverse normalize faceforward reflect refract lessThan " +
+    "lessThanEqual greaterThan greaterThanEqual equal notEqual any all not").split(" ");
+
+  function getCompletions(token, keywords, options) {
+    function arrayContains(arr, item) {
+      if (!Array.prototype.indexOf) {
+        var i = arr.length;
+        while (i--) {
+          if (arr[i] === item) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return arr.indexOf(item) != -1;
+    }
+    var found = [], start = token.string;
+    keywords.forEach(function (str) {
+      if (str.lastIndexOf(start, 0) == 0 && !arrayContains(found, str)) found.push(str);
+    });
+    return found;
+  }
+function scriptHint(editor, keywords, getToken, options) {
+  var cur = editor.getCursor(), token = getToken(editor, cur);
+  if (/\b(?:string|comment)\b/.test(token.type)) return;
+  token.state = CodeMirror.innerMode(editor.getMode(), token.state).state;
+
+  // If it's not a 'word-style' token, ignore the token.
+  if (!/^[\w$_]*$/.test(token.string)) {
+    token = {start: cur.ch, end: cur.ch, string: "", state: token.state,
+              type: token.string == "." ? "property" : null};
+  } else if (token.end > cur.ch) {
+    token.end = cur.ch;
+    token.string = token.string.slice(0, cur.ch - token.start);
+  }
+  var tprop = token;
+  var Pos = CodeMirror.Pos;
+  return {list: getCompletions(token, keywords, options),
+          from: Pos(cur.line, token.start),
+          to: Pos(cur.line, token.end)};
+}
+
+function glslHint(editor, options) {
+  return scriptHint(editor, glslBuiltins,
+                    function (e, cur) {return e.getTokenAt(cur);},
+                    options);
+};
+
+CodeMirror.registerHelper("hint", "glsl", glslHint);
+
+cmEditors = {};
+var colors = ["red", "green", "blue", "alpha"];
+colors.forEach(function(s, i) {
+  function voidFn() { reMod(); };
+  function tabFn(cm) {
+    var ed = cmEditors[colors[(cm.__index + 1) % 4]]
+    ed.focus();
+    ed.execCommand('selectAll');
+  };
+  var ed = CodeMirror.fromTextArea(document.querySelector("#editor div."+s+" textarea"), {
+    extraKeys: {
+      "Ctrl-Space": "autocomplete",
+      "Enter": voidFn,
+      "Tab": tabFn
+    },
+    matchBrackets:true,
+    autoCloseBrackets: true,
+    lineNumbers: false,
+    lineWrapping: false,
+    autofocus: true,
+    height: "auto",
+    mode: "text/x-glsl"
+  });
+  ed.setSize("100%", "100%");
+  ed.on("beforeChange", function(instance, change) {
+    var newtext = change.text.join("").replace(/\n/g, ""); // remove ALL \n !
+    change.update(change.from, change.to, [newtext]);
+    return true;
+  });
+  ed.__index = i;
+  cmEditors[s] = ed;
+});
+
+
 var descriptions = [];
 var descriptionEl = document.querySelector("#descriptions");
 function initDescriptions () {
@@ -39,7 +138,7 @@ function changeTemplate(el) {
 
 numinputs = document.querySelectorAll("#config input");
 templateButton = document.querySelector("#config #template");
-selectEl = document.querySelector("select");
+selectEl = document.querySelector("#config select");
 
 var currentBand = 0;
 
@@ -128,13 +227,14 @@ function getChannels(inputs) {
 ["red", "green", "blue", "alpha"].forEach(function (s){
   var v = getParameterByName(s);
   v = v ? decodeURIComponent(v) : localStorage.getItem("clubber-tool-"+s);
-  if (v) document.querySelector("div." + s + " input[type=text]").value = v;
+  if (v) cmEditors[s].setValue(v);
+  window.setTimeout(function() { cmEditors[s].scrollIntoView(); },0);
 });
 
 var TRACK = getParameterByName("track");
 
 function getChunk(s) {
-  var v = document.querySelector("div." + s + " input[type=text]").value;
+  var v = cmEditors[s].getValue();
   var c = document.querySelector("div." + s + " input[type=checkbox]").checked;
   if ( v ) localStorage.setItem("clubber-tool-"+s, v); else localStorage.removeItem("clubber-tool-"+s);
   midiConfig[["red", "green", "blue", "alpha"].indexOf(s)].enabled = c;
@@ -204,6 +304,7 @@ function toggleExport(el) {
   if(el.classList.contains("disabled")) {
     document.querySelector("#export").style.display = "block";
     el.classList.remove("disabled");
+    cmExport.execCommand("selectAll") 
   } else {
     document.querySelector("#export").style.display = "none";
     el.classList.add("disabled");
@@ -238,7 +339,7 @@ function genState() {
     a.push(serialize(i, true));
   }
   ["red", "green", "blue", "alpha"].forEach(function (s){
-    var vs = localStorage.getItem("clubber-tool-"+s);
+    var vs = localStorage.getItem("clubber-tool-" + s);
     if(vs) a.push(s+"="+encodeURIComponent(vs));
   });
   var v = localStorage.getItem("soundcloud-track");
@@ -280,20 +381,28 @@ function reloadAll (onlyMods) {
 
 function reMod(){
   ["red", "green", "blue", "alpha"].forEach(getChunk);
-  var src = toJS(genState());
-  var uniq = Date.now();
-  textArea.textContent = [
-    "// var clubber = new Clubber();",
-    "// var updater = cl_"+uniq+"(clubber);",
-    "// clubber.update();",
-    "// updater(arrayToFillWithModulatorValues);",
-    "",
-    "function cl_"+uniq+"(clubber) {", 
-    src, 
-    "}"
-  ].join("\n");
-  var fn = new Function("clubber", "config", src);
-  modFn = fn(clubber);
+  try {
+    var st = genState();
+    var src = toRayGL(st) + "\n\n" + toJS(st);
+    var uniq = Date.now();
+    cmExport.getDoc().setValue( [
+      "// var clubber = new Clubber();",
+      "// var updateModulators = cl_"+uniq+"(clubber);",
+      "// clubber.update();",
+      "// updateModulators(myArray);",
+      "",
+      "function cl_"+uniq+"(clubber) {", 
+      src, 
+      "}"
+    ].join("\n"));
+    for (var i=0;i<cmExport.lineCount();i++) { cmExport.indentLine(i); }
+    var fn = new Function("clubber", "config", src);
+    var f = fn(clubber);
+    f([0, 0, 0, 0]);
+    modFn = f;
+  } catch(e) {
+    alert(e.message);
+  }
 }
 
 function reload (alt) {
@@ -381,7 +490,7 @@ function resizeCanvasToDisplaySize(canvas, time) {
 window.addEventListener("resize", function () { RATIO=4; });
 
 var modFn = null;
-var editors = document.querySelectorAll("#editor > div > div");
+var editors = document.querySelectorAll("#editor > div > div.spacer");
 
 var midiConfig = [
   {dev: null, channel: 0, ctrl: 0, min: 0, max: 127, id: 0},
@@ -390,13 +499,67 @@ var midiConfig = [
   {dev: null, channel: 0, ctrl: 0, min: 0, max: 127, id: 0}
 ];
 
+function midiClock(mc) {
+  var lastVal = 0;
+  var lastTime = 0;
+  var lastDiff = 0;
+  var lastSent =0;
+  var lastDir = undefined;
+  var dt = 0;
+  var minDt = (2500 / mc.min);
+  var maxDt = (2500 / mc.max);
+  var a = 1 / Math.abs(mc.channel);
+  console.log(a);
+  return function(time, val) {
+	if(!lastTime) lastTime = time;
+    val *= 128;
+    var diff = val - lastVal;
+    var dir = diff > 0 ? true:false;
+    if(Math.abs(diff) > mc.ctrl ) {
+      lastVal = val;
+    }
+    
+    if(dir === lastDir) return;
+    lastDir = dir;
+         
+    if(dir ) {
+		
+      dt = (1 - a) * dt + a * Math.abs(time - lastTime) / 24;
+      dt = Math.min(maxDt, Math.max(maxDt, dt));
+	  lastTime = time;
+      if(mc.dev && mc.enabled) {
+		lastSent = Math.max(time, lastSent);
+        for(var i=0; i<24;i++){
+          mc.dev.send([0xF8], lastSent);
+          lastSent += dt;
+        }
+      }
+    }
+  }
+}
+
+function midiCtrl(mc, val) {
+  function mix(minVal, maxVal, val) {
+    val = Math.max(0,Math.min(1, val));
+    return minVal * (1 - val) + maxVal * val;
+  }
+
+  return function(time, val) {
+    if(mc.dev && mc.enabled) {
+      mc.dev.send([176 + mc.channel, mc.ctrl, mix(mc.min, mc.max, val)])
+    }
+  }
+}
+
 function setMidi(el, id, pres) {
   var da = [null];
   var sa = [
-    "Setup midi controller output for this field", 
+    "Provide 5, space separated, integer arguments",
+    "Positive 2nd arg selects channel/controller",
+	"Negative outputs clock, abs value is smoothing",
     "",
-    "Accepts 5, space separated, integer arguments",
-    "<ID> <CHANNEL 0-15> <CTRL 0-127> <MIN 0-127> <MAX 0-127>",
+    "ID CHANNEL(0~15) CTRL(0~127) MIN(0~127) MAX(0~127)",
+    "ID CLOCK(-N) THRESH(0~127) MINBPM(20~200) MAXBPM(20~200)",
     "", "Available device IDs:", "0) Disable midi output"];
   midi(function (ds) {
     var i = 0;
@@ -411,6 +574,7 @@ function setMidi(el, id, pres) {
     
     var parentClass = el.parentNode.classList.value;
 
+    delete mc.fn;
     el.textContent = "MIDI";
     el.classList.add("disabled");  
     localStorage.removeItem("midi-" + parentClass);
@@ -431,14 +595,26 @@ function setMidi(el, id, pres) {
     mc.min = ra[3] ? parseInt(ra[3]) : mc.min;
     mc.max = ra[4] ? parseInt(ra[4]) : mc.max;
     
-    el.textContent = mc.ctrl;
-    el.title = [
-      "DEV: " + mc.dev.name,  
-      "CHAN: " + mc.channel, 
-      "CTRL: " + mc.ctrl,
-      "RANGE: " + mc.min + " - " + mc.max
-    ].join(", ");
-
+    if(mc.channel < 0) {
+      el.textContent = "CLK";
+      el.title = [
+        "DEV: " + mc.dev.name,  
+        "MIDI CLOCK"
+      ].join(" - ");
+      mc.min = Math.min(200, Math.max(20, mc.min));
+	  mc.max = Math.min(200, Math.max(20, mc.max));
+      mc.fn = midiClock(mc);
+	} else {
+      el.textContent = mc.ctrl;
+      el.title = [
+        "DEV: " + mc.dev.name,  
+        "CHAN: " + mc.channel, 
+        "CTRL: " + mc.ctrl,
+        "RANGE: " + mc.min + " - " + mc.max
+      ].join(" - ");
+      mc.fn = midiCtrl(mc);
+    }
+    
     el.classList.remove("disabled");
     localStorage.setItem("midi-" + parentClass, [mc.id, mc.channel, mc.ctrl, mc.min, mc.max].join(" "));
   }, false);
@@ -464,13 +640,8 @@ function  render(time) {
     }
     var mc = midiConfig[i];
 
-    function midiMix(minVal, maxVal, val) {
-      val = Math.max(0,Math.min(1, val));
-      return minVal * (1 - val) + maxVal * val;
-    }
-
-    if(mc.dev && mc.enabled) {
-      mc.dev.send([176 + mc.channel, mc.ctrl, midiMix(mc.min, mc.max, uniforms.iClubber[i])]);
+    if(mc.fn) {
+      mc.fn(time, uniforms.iClubber[i]);
     }
     uniforms.iMusic.set( modFn.internal.bands[i], 4 * i);
     editors[i].style.width = (100 - 100 * uniforms.iClubber[i]) + "vw";

@@ -40,6 +40,8 @@
 
         <title>Clubber Tool</title>
         <link href='../index.css' rel='stylesheet' type='text/css'>
+        <link href="https://fonts.googleapis.com/css?family=Cousine" rel="stylesheet">
+        <link rel="stylesheet" href="../lib/codemirror.css">
         <style>
           #audio {
             position: fixed;
@@ -68,21 +70,22 @@
             position:relative;
             background-color: rgba(0,0,0,0.1);
             z-index: 0;
+            height: 2.5vh;
           }
           
           input, select {
             font-weight: bold;
             font-size: 1.33vh;
-            font-family:monospace;
+            font-family:'Cousine', monospace;
             vertical-align: middle;
             background-color: #eee;
           }
-          #editor input[type=text]{
+          #editor textarea{
             background-color: transparent;
             color: rgba(32,32,32,0.96);
             display:inline-block;
             border: 0.2vh solid #ccc;
-            font-family:monospace;
+            font-family:'Cousine', monospace;
             font-weight: bold;
             width:99vw;
             margin-top:0;
@@ -120,16 +123,16 @@
             margin: auto;
           }
 
-          #editor div.red input[type=text]{
+          #editor div.red textarea{
             color: rgb(0, 36, 36);
           }
-          #editor div.green input[type=text]{
+          #editor div.green textarea{
             color: rgb(36, 0, 36);
           }
-          #editor div.blue input[type=text]{
+          #editor div.blue textarea{
             color: rgb(36, 36, 0);
           }
-           #editor div.alpha input[type=text]{
+           #editor div.alpha textarea{
             color: rgb(32, 32, 32);
           }
 
@@ -160,6 +163,10 @@
             
           }
           
+          #editor > div > div.CodeMirror {
+            background-color: transparent;
+          }
+
           #octaves {
             position: relative;
             display: none;
@@ -174,7 +181,7 @@
           }
           
           #octaves div{
-            font-family: monospace;
+            font-family: 'Cousine', monospace;
             position:absolute;
             font-size: 1.6vh;
             color: #CCC;
@@ -225,7 +232,7 @@
             text-shadow: 1px 1px #666;
             font-weight: bold;
             font-size: 1.6vh;
-            font-family:monospace;
+            font-family:'Cousine', monospace;
           }
           
           #template {
@@ -234,10 +241,9 @@
 
           #export {
             position: fixed;
-            display:none;
             width: 100vw;
-            height: 70vh;
-            top:22vh;
+            height: 75vh;
+            top:25vh;
                 z-index: 10000;
 
           }
@@ -251,7 +257,7 @@
             padding: 2%;
             background-color: rgba(32,32,32,0.96);
             color: lightgray;
-            font-family: monospace;
+            font-family: 'Cousine', monospace;
           }
 
           .iLabel {
@@ -277,7 +283,7 @@
           }
 
           span {
-            font-size: 1.6vh;
+            font-size: 1.5vh;
           }
 
           select {
@@ -285,6 +291,36 @@
             border-radius: 0.2vh;
             margin-left:0.2vh;
           }
+          .CodeMirror {
+            border: 1px solid #eee;
+            height: auto;
+          }
+
+          .CodeMirror span {
+            color: black;
+            text-shadow: 0 0;
+            font-weight: bold;
+          }
+
+          .CodeMirror-hscrollbar {
+            display:none;
+          }
+
+          .CodeMirror-vscrollbar {
+            display:none !important;
+          }
+          #export .CodeMirror {
+             background: rgba(255,255,255,0.92);
+          }
+
+          .midi-config {
+            text-align:right;
+            padding-right: 6vh;
+            width:100% !important;
+            background-color: rgba(0,0,0,0.33) !important;
+            display: none;
+          }
+
         </style>
     </head>
 
@@ -321,31 +357,28 @@
         <div id="info"></div>
         
         
-        <div id="editor" title="Alt+<RGBA> toggles fields by color. Fields must evaluate to single floats, ideally 0-1. Press enter to compile.">
+        <div id="editor" title="Alt+<RGBA> toggles fields by color. Fields must evaluate to single floats, ideally 0-1. Ctrl+Space autocompletes. Press enter to compile.">
           <div class="red">
-            <div></div>
-            <input type="text" onkeyup="if(event.keyCode == 13) reMod()"
-            value="length(iMusic[0].yz) * min(iMusic[0].w, iMusic[1].w)" />
+            <div class="spacer"></div>
+            <textarea rows="1"></textarea>
             <input type="checkbox" onchange="reMod()" checked/>
             <button title="midi out" class="midi disabled" onclick="setMidi(this, 0)">MIDI</button>
           </div>
           <div class="green">
-            <div></div>
-            <input type="text" onkeyup="if(event.keyCode == 13) reMod()"
-            value="mix(iMusic[3].w, iMusic[3].z, iMusic[2].y)"/>
+            <div class="spacer"></div>
+            <textarea rows="1"></textarea>
             <input type="checkbox" onchange="reMod()" checked/>
             <button title="midi out" class="midi disabled" onclick="setMidi(this, 1)">MIDI</button>
           </div>
           <div class="blue">
-            <div></div>
-            <input type="text" onkeyup="if(event.keyCode == 13) reMod()" />
+            <div class="spacer"></div>
+            <textarea rows="1"></textarea>
             <input type="checkbox" onchange="reMod()" checked/>
             <button title="midi out" class="midi disabled" onclick="setMidi(this, 2)">MIDI</button>
           </div>
           <div class="alpha">
-            <div></div>
-            <input type="text" onkeyup="if(event.keyCode == 13) reMod()" 
-                placeholder="Write glsl statements in the fields. These should evaluate to floats, ideally 0-1.  Press enter to compile. Alt-<RGBA> toggles fields by color."/>
+            <div class="spacer"></div>
+            <textarea rows="1"></textarea>
             <input type="checkbox" id="radioAlpha" onchange="reMod()" checked/>
             <button title="midi out" class="midi disabled" onclick="setMidi(this, 3)">MIDI</button>
           </div>
@@ -387,6 +420,12 @@
       <script src="../lib/twgl.min.js"></script>
       <script src="../lib/shader.js"></script>
       <script src="../lib/common.js"></script>
+      <script src="../lib/codemirror.js"></script>
+      <script src="../lib/javascript.js"></script>
+      <script src="../lib/glsl.js"></script>
+      <script src="../lib/show-hint.js"></script>
+      <script src="../lib/matchbrackets.js"></script>
+      <script src="../lib/closebrackets.js"></script>
       <script src="./main.js"></script>
     </body>
 </html>

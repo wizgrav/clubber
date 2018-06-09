@@ -105,6 +105,18 @@ initClubber();
 
 var transitionTime = 2000;
 
+function patch(gl, clubber, s) {
+  var fn = new Function(uniforms, toJS(s));
+  var shader = new Shader(gl, { 
+    source: load("assets/shaders/" + id + ".fs"), 
+    uniforms: uniforms, 
+    correct: needsCorrection
+  }); 
+  return function (transition, correctArray) {
+    shader.render(data, true);
+  }
+}
+
 function render(time) {
   currentTime = time;
   window.requestAnimationFrame(render);
