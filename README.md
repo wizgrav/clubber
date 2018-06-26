@@ -7,6 +7,7 @@ This small js library listens to audio sources and extracts the underlying rhyth
 
 A set of meaningful measurements are produced in a form suitable for direct use in webgl shaders, or any other context. This simple flow provides a powerful framework for the rapid development of awesome audio reactive visualisations.
 
+[Rayglider](https://github.com/wizgrav/rayglider) A powerful glsl sandbox with built in clubber support.
 
 [Clubber Tool](http://wizgrav.github.io/clubber/tool) - A web app for prototyping audio reactive visualizations. This is the best place to start playing around with clubber as it can export the patches you create for use in your own applications. It also happens to be a first class tool for music analysis and thanks to web midi output a very advanced sidechaining mechanism. This can come handy for driving parameters on external software, ranging from djing and music production to driving visuals. Everything that accepts midi control change messages basically.
 
